@@ -1,0 +1,150 @@
+#!/bin/sh
+
+set -ex
+
+main() {
+	set_sensible_memory_limits
+	config_doas
+	stop_smtpd
+	#install_packages
+	config_touchpad
+	dirs
+	dotfiles
+	gpg
+	passwords
+	dev
+    services
+}
+
+
+# Make this diff exit with 0 / probably by piping into true
+set_sensible_memory_limits() {
+	cp /etc/login.conf /etc/login.conf.bak
+	sed -i 's/datasize-cur=768M/datasize-cur=8192M/' /etc/login.conf
+	sed -i 's/datasize-max=768M/datasize-max=8192M/' /etc/login.conf
+	diff -d /etc/login.conf.bak /etc/login.conf || true
+}
+
+
+config_doas() {
+	touch /etc/doas.conf
+	echo 'permit nopass rosstimson' > /etc/doas.conf
+}
+
+
+stop_smtpd() {
+	rcctl stop smtpd
+	rcctl disable smtpd
+}
+
+
+install_packages() {
+	#ftp -o "/tmp/pkgs" https://rosstimson.com/openbsd/pkgs
+	pkg_add -u -v -l "./pkgs.txt"
+}
+
+
+config_touchpad() {
+	cat <<- EOF | tee /etc/wsconsctl.conf
+		wsconsctl mouse.tp.tapping=1
+		wsconsctl mouse.reverse_scrolling=1
+		wsconsctl keyboard.bell.volume=0
+		wsconsctl keyboard.encoding=us.swapctrlcaps.colemak
+	EOF
+}
+
+
+# Create directories I normally have.
+dirs() {
+	su -l rosstimson -c 'mkdir -p /home/rosstimson/org'
+	su -l rosstimson -c 'mkdir -p /home/rosstimson/sync'
+	su -l rosstimson -c 'mkdir -p /home/rosstimson/pictures/{screenshots,wallpapers}'
+	su -l rosstimson -c 'mkdir -p /home/rosstimson/code/{clojure,go,python,rust,shell}'
+}
+
+
+dotfiles() {
+	# Add Github to known hosts.  Ensure the known_hosts file exists first of all.
+	su -l rosstimson -c 'touch /home/rosstimson/.ssh/known_hosts'
+
+	echo 'github.com,140.82.118.3 ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAq2A7hRGmdnm9tUDbO9IDSwBK6TbQa+PXYPCPy6rbTrTtw7PHkccKrpp0yVhp5HdEIcKr6pLlVDBfOLX9QUsyCOV0wzfjIJNlGEYsdlLJizHhbn2mUjvSAHQqZETYP81eFzLQNnPHt4EVVUh7VfDESU84KezmD5QlWpXLmvU31/yMf+Se8xhHTvKSCZIFImWwoG6mbUoWf9nzpIoaSjB+weqqUUmpaaasXVal72J+UX2B+2RPW3RcT0eOzQgqlJL3RKrTJvdsjE3JEAvGq3lGHSZXy28G3skua2SmVi/w4yCE6gbODqnTWlg7+wC604ydGXA8VJiS5ap43JXiUFFAaQ==' >> /home/rosstimson/.ssh/known_hosts
+
+	# Clone dotfiles from Github if the directory is not present.
+	if [ ! -d '/home/rosstimson/code/dotfiles' ]
+	then
+		su -l rosstimson -c 'git clone git@github.com:rosstimson/dotfiles.git /home/rosstimson/code/dotfiles'
+	fi
+	# Install dotfiles.
+	#su -l rosstimson -c 'cd /home/rosstimson/code/dotfiles && make'
+}
+
+
+# Do this after dotfiles as dotfiles includes GPG config.
+gpg() {
+	# TODO document this shit
+	ln -sf /usr/local/lib/libpcsclite.so.1.0 /usr/local/lib/libpcsclite.so
+
+	rcctl enable pcscd
+	rcctl start pcscd
+
+	# Import my public key if it is not already present.
+	su -l rosstimson -c 'gpg2 --list-keys 0x667A3481E4BB34F3 || gpg2 --recv-keys 0x667A3481E4BB34F3'
+}
+
+
+# Get password store (GPG encrypted and in a private Github repo)
+passwords() {
+	# Clone passwords from Github if the directory is not present.
+	if [ ! -d '/home/rosstimson/.password-store' ]
+	then
+		su -l rosstimson -c 'git clone git@github.com:rosstimson/pwstore.git /home/rosstimson/.password-store'
+	fi
+}
+
+
+dev() {
+	# Set default Python
+	ln -sf /usr/local/bin/pip3.7 /usr/local/bin/pip
+	ln -sf /usr/local/bin/python3.7 /usr/local/bin/python
+	ln -sf /usr/local/bin/python3.7-config /usr/local/bin/python-config
+	ln -sf /usr/local/bin/pydoc3.7  /usr/local/bin/pydoc
+
+	# Install some essential Python tools
+	su -l rosstimson -c 'pip install --user -U pipx pipenv python-language-server pyls-black'
+
+	# Install boot.sh for Clojure
+	if [ ! -x /usr/local/bin/boot ]
+	then
+		ftp -Vo /usr/local/bin/boot https://github.com/boot-clj/boot-bin/releases/download/latest/boot.sh \
+			&& chmod 755 /usr/local/bin/boot
+	fi
+
+	# Install language servers (LSP)
+	# Clojure - clojure-lsp
+	if [ ! -x /usr/local/bin/clojure-lsp ]
+	then
+		ftp -Vo /usr/local/bin/clojure-lsp https://github.com/snoe/clojure-lsp/releases/download/release-20190824T044626/clojure-lsp \
+			&& chmod 755 /usr/local/bin/clojure-lsp
+	fi
+
+	# Golang - gopls
+	if [ ! -x /home/rosstimson/code/go/bin/gopls ]
+	then
+		# Use my user as the binary will install to my $GOPATH/bin
+		su -l rosstimson -c 'GO111MODULE=on go get golang.org/x/tools/gopls@latest'
+	fi
+
+	# TODO Install Rust - rls. This is troublesome on OpenBSD as it relies on Racer
+	# which can only be built with Rust nightly.
+}
+
+
+services() {
+	rcctl set syncthing user rosstimson
+	rcctl set syncthing user rosstimson
+	rcctl start syncthing
+}
+
+
+main
+

@@ -1,0 +1,80 @@
+#!/bin/sh
+
+set -eux
+
+main() {
+	# upgrade
+	# install_packages
+	# set_shell
+	# config_doas
+	# create_dirs
+  # get_dotfiles
+    config_wifi
+    # enable_daemons
+}
+
+
+_ensure_line_in_file() {
+	grep -qF -- "${1}" "${2}" || echo "${1}" >> "${2}"
+}
+
+
+upgrade() {
+	xbps-install -Suy || true
+}
+
+
+install_packages() {
+	< ${PWD}/pkgs.txt xargs xbps-install -Sy || true
+}
+
+
+set_shell() {
+	chsh -s /bin/loksh rosstimson
+}
+
+
+config_doas() {
+	touch /etc/doas.conf
+	_ensure_line_in_file "permit nopass rosstimson" /etc/doas.conf
+}
+
+
+enable_daemons() {
+	ln -sf /etc/sv/xdm /var/service/xdm
+}
+
+
+create_dirs() {
+	sudo -u rosstimson mkdir -p /home/rosstimson/code/shell
+}
+
+
+get_dotfiles() {
+    sudo -u rosstimson git clone https://github.com/rosstimson/dotfiles.git /home/rosstimson/code/dotfiles
+}
+
+
+config_wifi() {
+    echo "Wifi Device: "
+    read wifi_dev
+
+    echo "Wifi SSID: "
+    read wifi_ssid
+
+    echo "Wifi Passphrase: "
+    read wifi_pass
+
+    
+    echo "Wifi SSID is $wifi"
+    # /etc/wpa_supplicant/wpa_supplicant-<device>.conf
+    cat << EOF | tee /tmp/ross_test
+This line will write to the file.
+$(date)
+$(echo "Wifi SSID was: $wifi").
+wpa_passphrase <MYSSID> <key>
+EOF
+}
+
+
+main

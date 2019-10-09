@@ -1,0 +1,13 @@
+curl
+cwm
+emacs-gtk3
+git
+loksh
+mg
+neovim
+opendoas
+tmux
+wget
+xdm
+xorg
+xterm

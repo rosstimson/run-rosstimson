@@ -34,8 +34,3 @@ resource "aws_acm_certificate_validation" "cert" {
   certificate_arn         = aws_acm_certificate.ross_run_cert.arn
   validation_record_fqdns = [aws_route53_record.cert_validation.fqdn]
 }
-
-resource "aws_api_gateway_domain_name" "custom_dns" {
-  certificate_arn = aws_acm_certificate_validation.cert.certificate_arn
-  domain_name     = var.domain
-}

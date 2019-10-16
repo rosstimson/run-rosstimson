@@ -4,9 +4,9 @@ emacs-gtk3
 git
 loksh
 mg
-neovim
 opendoas
 tmux
+vim
 wget
 xdm
 xorg

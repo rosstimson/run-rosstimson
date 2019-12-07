@@ -15,6 +15,7 @@ main() {
     gpg
     passwords
     flatpak
+    post_install_services
 }
 
 
@@ -42,9 +43,6 @@ upgrade() {
 # need it as I'm using 'doas'.
 packages() {
     < "${PWD}"/pkgs.txt xargs xbps-install -Sy || true
-
-    # Uninstall sudo
-    xbps-remove -y sudo
 }
 
 
@@ -63,6 +61,12 @@ config_doas() {
 
 # Start and enable services.
 services() {
+    # Set temp file so that xdm doesn't start and load up graphical
+    # login whilst the rest of this script has not run.  This file
+    # will be cleaned up at the end of this script in the
+    # post_install_services function.
+    touch /etc/sv/xdm/down
+
     ln -sf /etc/sv/xdm/ /var/service/
     ln -sf /etc/sv/pcscd/ /var/service/
     ln -sf /etc/sv/openntpd/ /var/service/
@@ -73,9 +77,6 @@ services() {
     ln -sf /etc/sv/pulseaudio/ /var/service/
     ln -sf /etc/sv/socklog-unix/ /var/service/
     ln -sf /etc/sv/nanoklogd/ /var/service/
-
-    # Disable sshd which is enabled by default.
-    rm /var/service/sshd
 }
 
 
@@ -168,6 +169,17 @@ flatpak() {
     su --pty -l rosstimson -c 'flatpak install -y --user flathub com.slack.Slack'
     su --pty -l rosstimson -c 'flatpak install -y --user flathub us.zoom.Zoom'
 }
+
+
+post_install_services() {
+    # Cleanup temp file that was added to stop xdm starting during the
+    # running of this script.
+    rm -f /etc/sv/xdm/down
+
+    # Disable sshd
+    rm -f /var/service/sshd
+}
+
 
 
 

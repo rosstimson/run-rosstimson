@@ -39,6 +39,7 @@ rxvt-unicode
 shellcheck
 slock
 socklog-void
+sxiv
 tmux
 tree
 vim

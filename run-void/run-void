@@ -172,8 +172,14 @@ flatpak() {
 }
 
 dev() {
+    # Set default Python
+    ln -sf /usr/bin/pip3 /usr/bin/pip
+    ln -sf /usr/bin/python3 /usr/bin/python
+    ln -sf /usr/bin/python3-config /usr/bin/python-config
+    ln -sf /usr/bin/pydoc3 /usr/bin/pydoc
+
     # Install some essential Python tools
-    su -l rosstimson -c 'pip3 install --user -U pipx pipenv python-language-server pyls-black'
+    su -l rosstimson -c 'pip install --user -U pipx pipenv python-language-server pyls-black'
 
     # Rustup is installed but it needs initiated to download everything.
     # Need to run this in a pty as my user as it is interactive.

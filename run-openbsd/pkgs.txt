@@ -19,6 +19,7 @@ python%3.7
 ripgrep
 rust
 shellcheck--
+sxiv
 tree
 vim--no_x11
 w3m--image

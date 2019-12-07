@@ -12,6 +12,7 @@ firefox-i18n-en-GB
 flatpak
 font-spleen
 fvwm
+gcc
 git
 gnupg2
 gnupg2-scdaemon
@@ -30,6 +31,7 @@ pcsc-ccid
 pcsclite
 pulseaudio
 python3
+python3-devel
 python3-pip
 ripgrep
 rustup

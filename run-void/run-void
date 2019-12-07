@@ -173,7 +173,7 @@ flatpak() {
 
 dev() {
     # Install some essential Python tools
-    su -l rosstimson -c 'pip install --user -U pipx pipenv python-language-server pyls-black'
+    su -l rosstimson -c 'pip3 install --user -U pipx pipenv python-language-server pyls-black'
 
     # Rustup is installed but it needs initiated to download everything.
     # Need to run this in a pty as my user as it is interactive.

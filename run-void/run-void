@@ -15,6 +15,7 @@ main() {
     gpg
     passwords
     flatpak
+    dev
     post_install_services
 }
 
@@ -168,6 +169,30 @@ flatpak() {
     su --pty -l rosstimson -c 'flatpak install -y --user flathub com.spotify.Client'
     su --pty -l rosstimson -c 'flatpak install -y --user flathub com.slack.Slack'
     su --pty -l rosstimson -c 'flatpak install -y --user flathub us.zoom.Zoom'
+}
+
+dev() {
+    # Install some essential Python tools
+    su -l rosstimson -c 'pip install --user -U pipx pipenv python-language-server pyls-black'
+
+    # Rustup is installed but it needs initiated to download everything.
+    # Need to run this in a pty as my user as it is interactive.
+    su --pty -l rosstimson -c 'rustup-init'
+
+    # Install boot.sh for Clojure
+    if [ ! -x /usr/local/bin/boot ]; then
+        cd /usr/local/bin && \
+        curl -fsSLo boot https://github.com/boot-clj/boot-bin/releases/download/latest/boot.sh && \
+        chmod 755 boot
+    fi
+
+    # Install language servers (LSP)
+    # Clojure - clojure-lsp
+    if [ ! -x /usr/local/bin/clojure-lsp ]; then
+        cd /usr/local/bin && \
+        curl -fsSLo clojure-lsp https://github.com/snoe/clojure-lsp/releases/download/release-20191202T142318/clojure-lsp && \
+        chmod 755 /usr/local/bin/clojure-lsp
+    fi
 }
 
 

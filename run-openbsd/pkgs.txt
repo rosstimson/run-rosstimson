@@ -27,3 +27,4 @@ zathura
 got
 restic
 syncthing
+hunspell

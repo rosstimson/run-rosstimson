@@ -1,80 +1,174 @@
 #!/bin/sh
 
-set -eux
+set -eu
 
 main() {
-	# upgrade
-	# install_packages
-	# set_shell
-	# config_doas
-	# create_dirs
-  # get_dotfiles
-    config_wifi
-    # enable_daemons
+    network
+    upgrade
+    packages
+    sound
+    services
+    set_shell
+    config_doas
+    directories
+    dotfiles
+    gpg
+    passwords
+    flatpak
 }
 
 
-_ensure_line_in_file() {
-	grep -qF -- "${1}" "${2}" || echo "${1}" >> "${2}"
+# Ensure wpa_supplicant is started via a dhcpd hook as per docs:
+# https://wiki.voidlinux.org/Network_Configuration#Starting_wpa_supplicant_through_dhcpcd_hooks
+#
+# This seems to work out of the box but breaks after a full system
+# upgrade, I think the version of dhcpd gets downgraded for some
+# reason as the docs state this symlink is only necessary with older
+# versions.
+network() {
+    ln -sf /usr/share/dhcpcd/hooks/10-wpa_supplicant /usr/libexec/dhcpcd-hooks
 }
 
 
+# Full system upgrade as the base install ISO is fairly dated and Void
+# is a 'rolling release' distro.
 upgrade() {
-	xbps-install -Suy || true
+    xbps-install -Suy || true
 }
 
 
-install_packages() {
-	< ${PWD}/pkgs.txt xargs xbps-install -Sy || true
+# Install packages.
+# Also remove 'sudo' package which is installed by default, I don't
+# need it as I'm using 'doas'.
+packages() {
+    < "${PWD}"/pkgs.txt xargs xbps-install -Sy || true
+
+    # Uninstall sudo
+    xbps-remove -y sudo
 }
 
 
+# Set my user's shell to OpenBSD ksh.
 set_shell() {
-	chsh -s /bin/loksh rosstimson
+    chsh -s /bin/loksh rosstimson
 }
 
 
+# Configure my user with doas, a simple sudo replacement from OpendBSD.
 config_doas() {
-	touch /etc/doas.conf
-	_ensure_line_in_file "permit nopass rosstimson" /etc/doas.conf
+    touch /etc/doas.conf
+    echo 'permit nopass rosstimson' > /etc/doas.conf
 }
 
 
-enable_daemons() {
-	ln -sf /etc/sv/xdm /var/service/xdm
+# Start and enable services.
+services() {
+    ln -sf /etc/sv/xdm/ /var/service/
+    ln -sf /etc/sv/pcscd/ /var/service/
+    ln -sf /etc/sv/openntpd/ /var/service/
+    ln -sf /etc/sv/alsa/ /var/service/
+    ln -sf /etc/sv/dbus/ /var/service/
+    ln -sf /etc/sv/cgmanager/ /var/service/
+    ln -sf /etc/sv/consolekit/ /var/service/
+    ln -sf /etc/sv/pulseaudio/ /var/service/
+    ln -sf /etc/sv/socklog-unix/ /var/service/
+    ln -sf /etc/sv/nanoklogd/ /var/service/
+
+    # Disable sshd which is enabled by default.
+    rm /var/service/sshd
 }
 
 
-create_dirs() {
-	sudo -u rosstimson mkdir -p /home/rosstimson/code/shell
+# Create directories I normally have.
+directories() {
+    su -l rosstimson -c 'mkdir -p /home/rosstimson/org'
+    su -l rosstimson -c 'mkdir -p /home/rosstimson/sync'
+    su -l rosstimson -c 'mkdir -p /home/rosstimson/pictures/{screenshots,wallpapers}'
+    su -l rosstimson -c 'mkdir -p /home/rosstimson/code/{clojure,go,python,rust,shell}'
 }
 
 
-get_dotfiles() {
-    sudo -u rosstimson git clone https://github.com/rosstimson/dotfiles.git /home/rosstimson/code/dotfiles
+dotfiles() {
+    # Add Github to known hosts.  Ensure the known_hosts file exists first of all.
+    su -l rosstimson -c 'touch /home/rosstimson/.ssh/known_hosts'
+
+    echo 'github.com,140.82.118.3 ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAq2A7hRGmdnm9tUDbO9IDSwBK6TbQa+PXYPCPy6rbTrTtw7PHkccKrpp0yVhp5HdEIcKr6pLlVDBfOLX9QUsyCOV0wzfjIJNlGEYsdlLJizHhbn2mUjvSAHQqZETYP81eFzLQNnPHt4EVVUh7VfDESU84KezmD5QlWpXLmvU31/yMf+Se8xhHTvKSCZIFImWwoG6mbUoWf9nzpIoaSjB+weqqUUmpaaasXVal72J+UX2B+2RPW3RcT0eOzQgqlJL3RKrTJvdsjE3JEAvGq3lGHSZXy28G3skua2SmVi/w4yCE6gbODqnTWlg7+wC604ydGXA8VJiS5ap43JXiUFFAaQ==' >> /home/rosstimson/.ssh/known_hosts
+
+    # Clone dotfiles from Github if the directory is not present.
+    if [ ! -d '/home/rosstimson/code/dotfiles' ]
+    then
+        su --pty -l rosstimson -c 'git clone git@github.com:rosstimson/dotfiles.git /home/rosstimson/code/dotfiles'
+    fi
+    # Install dotfiles.
+    su -l rosstimson -c 'cd /home/rosstimson/code/dotfiles && make'
 }
 
 
-config_wifi() {
-    echo "Wifi Device: "
-    read wifi_dev
+# Do this after dotfiles as dotfiles includes GPG config.
+gpg() {
+    # NOTE: For GPG on Yubikey to work the following packages need to be installed:
+    # gnupg2, gnupg2-scdaemon, pcsclite, pcsc-ccid, elogind
+    #
+    # Also the pcscd service needs to be running for using GPG private
+    # keys on Yubikey smartcard, it is enabled/started in the services
+    # section/function.
 
-    echo "Wifi SSID: "
-    read wifi_ssid
+    # Ensure my ~/.gnupg dir has the correct permissions otherwise it will error.
+    chmod 700 /home/rosstimson/.gnupg
 
-    echo "Wifi Passphrase: "
-    read wifi_pass
+    # TODO document this shit
+    ln -sf /usr/lib/libpcsclite.so.1 /usr/lib/libpcsclite.so
 
-    
-    echo "Wifi SSID is $wifi"
-    # /etc/wpa_supplicant/wpa_supplicant-<device>.conf
-    cat << EOF | tee /tmp/ross_test
-This line will write to the file.
-$(date)
-$(echo "Wifi SSID was: $wifi").
-wpa_passphrase <MYSSID> <key>
-EOF
+    # Import my public key if it is not already present.
+    su -l rosstimson -c 'gpg2 --list-keys 0x667A3481E4BB34F3 || gpg2 --recv-keys 0x667A3481E4BB34F3'
+
+    # My ~/.gnupg/gpg-agent.conf has the following for the pinentry program:
+    # pinentry-program /usr/local/bin/pinentry-curses
+    #
+    # This location is the default for OpenBSD but on Void Linux it is
+    # at /bin/pinentry-curses so symlink for this config to still
+    # work.
+    ln -sf /bin/pinentry-curses /usr/local/bin/
 }
+
+
+# Get password store (GPG encrypted and in a private Github repo)
+passwords() {
+    # Clone passwords from Github if the directory is not present.
+    if [ ! -d '/home/rosstimson/.password-store' ]
+    then
+        su --pty -l rosstimson -c 'git clone git@github.com:rosstimson/pwstore.git /home/rosstimson/.password-store'
+    fi
+}
+
+
+# Enable / config sound
+sound() {
+    # Unmute and set a default volume before the alsa service is
+    # enabled as per docs here: https://wiki.voidlinux.org/PulseAudio
+    #
+    # "Make sure your Wikipedia-logo.png alsa output device is not muted
+    # and then enable the alsa runit service to save and restore alsa
+    # levels and configuration between reboots"
+    amixer -c 1 set Master unmute
+    amixer -c 1 set Master 60%
+
+    usermod -a -G pulse-access rosstimson
+}
+
+
+# Flatpak apps
+# NOTE: Without the --pty this segfaults the script.
+flatpak() {
+    # Add Flathub repo
+    su --pty -l rosstimson -c 'flatpak remote-add --user --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo'
+
+    # Install Flatpak apps
+    su --pty -l rosstimson -c 'flatpak install -y --user flathub com.spotify.Client'
+    su --pty -l rosstimson -c 'flatpak install -y --user flathub com.slack.Slack'
+    su --pty -l rosstimson -c 'flatpak install -y --user flathub us.zoom.Zoom'
+}
+
 
 
 main

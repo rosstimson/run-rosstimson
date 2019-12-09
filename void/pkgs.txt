@@ -1,5 +1,6 @@
 ConsoleKit2
 alsa-utils
+buildah
 cmus
 curl
 cwm
@@ -20,6 +21,7 @@ go
 gohufont
 gopls
 hunspell
+libreoffice
 loksh
 make
 mg
@@ -29,6 +31,7 @@ openntpd
 pass
 pcsc-ccid
 pcsclite
+podman
 pulseaudio
 python3
 python3-devel
@@ -36,10 +39,12 @@ python3-pip
 ripgrep
 rustup
 rxvt-unicode
+scrot
 shellcheck
 slock
 socklog-void
 sxiv
+tealdeer
 tmux
 tree
 vim

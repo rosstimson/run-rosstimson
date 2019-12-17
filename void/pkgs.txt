@@ -1,4 +1,5 @@
 ConsoleKit2
+alacritty
 alsa-utils
 buildah
 cmus

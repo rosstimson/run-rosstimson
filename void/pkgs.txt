@@ -1,6 +1,7 @@
 ConsoleKit2
 alacritty
 alsa-utils
+bat
 buildah
 cmus
 curl
@@ -8,6 +9,7 @@ cwm
 dmenu
 elogind
 emacs-gtk3
+fd
 feh
 firefox
 firefox-i18n-en-GB

@@ -1,17 +1,37 @@
-name: CI
+name: Deploy
 
-on: [push]
+on:
+  push:
+    branches:
+      - master
 
 jobs:
-  build:
+  deploy:
 
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
-    - name: Run a one-line script
-      run: echo Hello, world!
-    - name: Run a multi-line script
-      run: |
-        echo Add other actions to build,
-        echo test, and deploy your project.
+    - name: checkout
+      uses: actions/checkout@v2
+
+    # Upload to S3
+    - name: sync s3
+      uses: jakejarvis/s3-sync-action@v0.5.1
+      with:
+        args: --exclude '.git*/*' --exclude 'infra/' --delete --follow-symlinks
+      env:
+        SOURCE_DIR: './'
+        AWS_REGION: 'eu-west-2'
+        AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+    # Invalidate Cloudfront
+    - name: invalidate cloudfront
+      uses: chetan/invalidate-cloudfront-action@v1.2
+      env:
+        DISTRIBUTION: ${{ secrets.DISTRIBUTION }}
+        PATHS: '/*'
+        AWS_REGION: 'eu-west-2'
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}

@@ -18,7 +18,7 @@ jobs:
     - name: sync s3
       uses: jakejarvis/s3-sync-action@v0.5.1
       with:
-        args: --exclude '.git*/*' --exclude 'infra/' --delete --follow-symlinks
+        args: --exclude '.git*/*' --exclude 'infra' --exclude '.gitignore' --exclude 'LICENSE.txt' --exclude 'README.md' --delete --follow-symlinks
       env:
         SOURCE_DIR: './'
         AWS_REGION: 'eu-west-2'

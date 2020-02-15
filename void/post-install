@@ -185,7 +185,7 @@ dev() {
     # Need to run this in a pty as my user as it is interactive.
     su --pty -l rosstimson -c 'rustup-init'
 
-    # Install boot.sh for Clojure
+    # Install boot.sh for Clojure (https://boot-clj.com)
     if [ ! -x /usr/local/bin/boot ]; then
         cd /usr/local/bin && \
         curl -fsSLo boot https://github.com/boot-clj/boot-bin/releases/download/latest/boot.sh && \
@@ -199,6 +199,13 @@ dev() {
         curl -fsSLo clojure-lsp https://github.com/snoe/clojure-lsp/releases/download/release-20191202T142318/clojure-lsp && \
         chmod 755 /usr/local/bin/clojure-lsp
     fi
+
+    # Rust - rust-analyzer (https://rust-analyzer.github.io)
+    if [ ! -x /home/rosstimson/.cargo/bin/ra_lsp_server ]; then
+        su --pty -l rosstimson -c 'git clone https://github.com/rust-analyzer/rust-analyzer /home/rosstimson/code/rust/rust-analyzer'
+        su -l rosstimson -c 'cd /home/rosstimson/code/rust/rust-analyzer && cargo xtask install --server'
+    fi
+
 }
 
 

@@ -28,6 +28,7 @@ libreoffice
 loksh
 make
 mg
+nodejs
 opendoas
 openjdk11
 openntpd
@@ -60,4 +61,5 @@ xclip
 xdm
 xorg
 xterm
+yarn
 zathura

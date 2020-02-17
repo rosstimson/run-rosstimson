@@ -181,6 +181,9 @@ dev() {
     # Install some essential Python tools
     su -l rosstimson -c 'pip install --user -U pipx pipenv python-language-server pyls-black'
 
+    # Install some JavaScript essential tools
+    su -l rosstimson -c 'npm install -g eslint typescript-language-server typescript'
+
     # Rustup is installed but it needs initiated to download everything.
     # Need to run this in a pty as my user as it is interactive.
     su --pty -l rosstimson -c 'rustup-init'
@@ -205,7 +208,6 @@ dev() {
         su --pty -l rosstimson -c 'git clone https://github.com/rust-analyzer/rust-analyzer /home/rosstimson/code/rust/rust-analyzer'
         su -l rosstimson -c 'cd /home/rosstimson/code/rust/rust-analyzer && cargo xtask install --server'
     fi
-
 }
 
 

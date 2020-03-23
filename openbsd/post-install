@@ -81,7 +81,13 @@ dotfiles() {
 
 # Do this after dotfiles as dotfiles includes GPG config.
 gpg() {
-	# TODO document this shit
+    # From 'man 1 scdaemon':
+    # --pcsc-driver library Use library to access the smartcard reader.
+    # The current default is ‘libpcsclite.so’.  Instead of using this
+    # option you might also want to install a symbolic link to the
+    # default file name (e.g. from ‘libpcsclite.so.1’).
+    #
+    # Without this symlink GPG keys on Yubikey will not work.
 	ln -sf /usr/local/lib/libpcsclite.so.1.0 /usr/local/lib/libpcsclite.so
 
 	rcctl enable pcscd

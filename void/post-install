@@ -118,14 +118,20 @@ gpg() {
     # Ensure my ~/.gnupg dir has the correct permissions otherwise it will error.
     chmod 700 /home/rosstimson/.gnupg
 
-    # TODO document this shit
+    # From 'man 1 scdaemon':
+    # --pcsc-driver library Use library to access the smartcard reader.
+    # The current default is ‘libpcsclite.so’.  Instead of using this
+    # option you might also want to install a symbolic link to the
+    # default file name (e.g. from ‘libpcsclite.so.1’).
+    #
+    # Without this symlink GPG keys on Yubikey will not work.
     ln -sf /usr/lib/libpcsclite.so.1 /usr/lib/libpcsclite.so
 
     # Import my public key if it is not already present.
     su -l rosstimson -c 'gpg2 --list-keys 0x667A3481E4BB34F3 || gpg2 --recv-keys 0x667A3481E4BB34F3'
 
     # My ~/.gnupg/gpg-agent.conf has the following for the pinentry program:
-    # pinentry-program /usr/local/bin/pinentry-curses
+    # pinentry-program /usr/bin/pinentry-curses
     #
     # This location is the default for OpenBSD but on Void Linux it is
     # at /bin/pinentry-curses so symlink for this config to still

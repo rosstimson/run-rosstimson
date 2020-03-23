@@ -1,0 +1,168 @@
+#!/bin/sh
+
+set -eu
+
+main() {
+	packages
+	correct_names
+	set_shell
+	alternatives
+	config_sudo
+	directories
+	xbanish
+	dotfiles
+	gpg
+	passwords
+	dev
+}
+
+# Install packages.
+packages() {
+	# Refresh package index first.
+	apt update
+
+	# Install from list of packages in a text file.
+	# OR true - is so that the script doesn't error out when the package
+	# manager notices that a package is already install.d
+	< "${PWD}"/pkgs.txt xargs apt install -y || true
+}
+
+
+# Debian obnoxiously renames loadsa shit, symlink to their proper names.
+correct_names() {
+	ln -sf /usr/bin/openbsd-cwm /usr/bin/cwm
+	ln -sf /usr/bin/signify-openbsd /usr/bin/signify
+	ln -sf /usr/bin/fdfind /usr/bin/fd
+	ln -sf /usr/bin/yarnpkg /usr/bin/yarn
+}
+
+
+# xbanish is not available in Debian repos
+xbanish() {
+	# If the executable is not already installed then compile and install.
+	if [ ! -x /usr/local/bin/xbanish ]; then
+		# Only clone the src repo if it hasn't been cloned already.
+		if [ ! -d '/home/rosstimson/src/xbanish' ]; then
+			su --pty -l rosstimson -c 'cd /home/rosstimson/src && git clone https://github.com/jcs/xbanish.git /home/rosstimson/src/xbanish'
+		fi
+		# Compile and install.
+		cd /home/rosstimson/src/xbanish && make && make install
+	fi
+}
+
+
+# Set my user's shell to zsh.
+set_shell() {
+	chsh -s /usr/bin/zsh rosstimson
+}
+
+
+# Set any alternatives
+alternatives() {
+	update-alternatives --set editor /usr/bin/mg
+}
+
+
+# Configure my user for sudo without a password
+config_sudo() {
+	cat <<- EOF | tee /etc/sudoers.d/rosstimson
+		rosstimson	 ALL=(ALL) NOPASSWD:ALL
+	EOF
+}
+
+
+# Create directories I normally have.
+directories() {
+	su -l rosstimson -c 'mkdir -p /home/rosstimson/{org,src,sync}'
+	su -l rosstimson -c 'mkdir -p /home/rosstimson/pictures/{screenshots,wallpapers}'
+	su -l rosstimson -c 'mkdir -p /home/rosstimson/code/{clojure,go,python,rust,shell,terraform,javascript}'
+}
+
+
+dotfiles() {
+	# Add Github to known hosts.  Ensure the known_hosts file exists first of all.
+	su -l rosstimson -c 'touch /home/rosstimson/.ssh/known_hosts'
+
+	echo 'github.com,140.82.118.3 ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAq2A7hRGmdnm9tUDbO9IDSwBK6TbQa+PXYPCPy6rbTrTtw7PHkccKrpp0yVhp5HdEIcKr6pLlVDBfOLX9QUsyCOV0wzfjIJNlGEYsdlLJizHhbn2mUjvSAHQqZETYP81eFzLQNnPHt4EVVUh7VfDESU84KezmD5QlWpXLmvU31/yMf+Se8xhHTvKSCZIFImWwoG6mbUoWf9nzpIoaSjB+weqqUUmpaaasXVal72J+UX2B+2RPW3RcT0eOzQgqlJL3RKrTJvdsjE3JEAvGq3lGHSZXy28G3skua2SmVi/w4yCE6gbODqnTWlg7+wC604ydGXA8VJiS5ap43JXiUFFAaQ==' >> /home/rosstimson/.ssh/known_hosts
+
+	# Clone dotfiles from Github if the directory is not present.
+	if [ ! -d '/home/rosstimson/code/dotfiles' ]
+	then
+		su --pty -l rosstimson -c 'git clone git@github.com:rosstimson/dotfiles.git /home/rosstimson/code/dotfiles'
+	fi
+	# Install dotfiles.
+	su -l rosstimson -c 'cd /home/rosstimson/code/dotfiles && make'
+}
+
+
+# Do this after dotfiles as dotfiles includes GPG config.
+gpg() {
+	# NOTE: For GPG on Yubikey to work the following packages need to be installed:
+	# gnupg pcscd scdaemon
+	#
+	# Also the pcscd service needs to be running for using GPG private
+	# keys on Yubikey smartcard, it is enabled/started upon
+	# installation on Debian.
+
+	# Ensure my ~/.gnupg dir has the correct permissions otherwise it will error.
+	chmod 700 /home/rosstimson/.gnupg
+
+	# From 'man 1 scdaemon':
+	# --pcsc-driver library Use library to access the smartcard reader.
+	# The current default is ‘libpcsclite.so’.	Instead of using this
+	# option you might also want to install a symbolic link to the
+	# default file name (e.g. from ‘libpcsclite.so.1’).
+	#
+	# Without this symlink GPG keys on Yubikey will not work.
+	ln -sf /usr/lib/x86_64-linux-gnu/libpcsclite.so.1 /usr/lib/x86_64-linux-gnu/libpcsclite.so
+
+	# Import my public key if it is not already present.
+	su -l rosstimson -c 'gpg --list-keys 0x667A3481E4BB34F3 || gpg --recv-keys 0x667A3481E4BB34F3'
+}
+
+
+# Get password store (GPG encrypted and in a private Github repo)
+passwords() {
+	# Clone passwords from Github if the directory is not present.
+	if [ ! -d '/home/rosstimson/.password-store' ]
+	then
+		su --pty -l rosstimson -c 'git clone git@github.com:rosstimson/pwstore.git /home/rosstimson/.password-store'
+	fi
+}
+
+
+dev() {
+	# Install some essential Python tools
+	su -l rosstimson -c 'pip3 install --user -U pipx pipenv python-language-server pyls-black'
+
+	# Install some JavaScript essential tools
+	su -l rosstimson -c 'yarn global add eslint typescript-language-server typescript'
+
+	# Rustup is the recommended way to install Rust
+	# Need to run this in a pty as my user as it is interactive.
+	su --pty -l rosstimson -c 'curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh'
+
+	# Rust - rust-analyzer (https://rust-analyzer.github.io)
+	if [ ! -x /home/rosstimson/.cargo/bin/ra_lsp_server ]; then
+		su --pty -l rosstimson -c 'git clone https://github.com/rust-analyzer/rust-analyzer /home/rosstimson/code/rust/rust-analyzer'
+		su -l rosstimson -c 'cd /home/rosstimson/code/rust/rust-analyzer && cargo xtask install --server'
+	fi
+
+	# Install boot.sh for Clojure (https://boot-clj.com)
+	if [ ! -x /usr/local/bin/boot ]; then
+		cd /usr/local/bin && \
+		curl -fsSLo boot https://github.com/boot-clj/boot-bin/releases/download/latest/boot.sh && \
+		chmod 755 boot
+	fi
+
+	# Install language servers (LSP)
+	# Clojure - clojure-lsp
+	if [ ! -x /usr/local/bin/clojure-lsp ]; then
+		cd /usr/local/bin && \
+		curl -fsSLo clojure-lsp https://github.com/snoe/clojure-lsp/releases/download/release-20200314T202821/clojure-lsp && \
+		chmod 755 /usr/local/bin/clojure-lsp
+	fi
+}
+
+
+main

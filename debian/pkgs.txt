@@ -48,6 +48,7 @@ tmux
 ttf-bitstream-vera
 ttf-dejavu
 ttf-mscorefonts-installer
+ufw
 unzip
 vim
 wget

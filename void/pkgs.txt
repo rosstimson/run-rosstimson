@@ -53,6 +53,7 @@ sxiv
 tealdeer
 tmux
 tree
+ufw
 vim
 w3m-img
 wget

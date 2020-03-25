@@ -28,6 +28,7 @@ libreoffice
 loksh
 make
 mg
+neofetch
 nodejs
 opendoas
 openjdk11
@@ -56,7 +57,9 @@ vim
 w3m-img
 wget
 xautolock
+xbacklight
 xbanish
+xbindkeys
 xclip
 xdm
 xorg

@@ -15,6 +15,7 @@ firefox
 firefox-i18n-en-GB
 flatpak
 font-spleen
+fonts-roboto-ttf
 fvwm
 gcc
 git

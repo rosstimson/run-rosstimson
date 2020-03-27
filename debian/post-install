@@ -67,6 +67,15 @@ manual_installs() {
 			&& rm terraform_${TERRAFORM_VERSION}_linux_amd64.zip
 	fi
 
+	# AWS CLI v2
+	if [ ! -x /usr/local/bin/aws ]; then
+		cd /tmp \
+			&& wget https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip \
+			&& unzip awscli-exe-linux-x86_64.zip \
+			&& ./aws/install \
+			&& rm -rf aws awscli-exe-linux-x86_64.zip
+	fi
+
 	# GNU Emacs (https://www.gnu.org/software/emacs)
 	if [ ! -x /usr/local/bin/emacs ]; then
 		# Only fetch the src tarball if src code is not already present

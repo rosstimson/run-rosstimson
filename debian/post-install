@@ -20,6 +20,7 @@ main() {
 	passwords
 	dev
 	fonts
+	wallpaper
 }
 
 # Install packages.
@@ -267,6 +268,15 @@ fonts() {
 	rm -f /etc/fonts/conf.d/70-no-bitmaps.conf
 	ln -sf /usr/share/fontconfig/conf.avail/70-yes-bitmaps.conf /etc/fonts/conf.d/
 	fc-cache -fv
+}
+
+
+# Download and set default wallpaper.
+# NOTE this downloads from a private S3 bucket so needs my AWS profile/creds setup.
+wallpaper() {
+	su -l rosstimson -c "cd /home/rosstimson/pictures/wallpapers \
+	   && aws --profile rosstimson s3 cp s3://pictures-rosstimson/wallpapers/unsplash/denys-nevozhai-toyko-night.jpg . \
+	   && ln -sf denys-nevozhai-toyko-night.jpg wallpaper"
 }
 
 

@@ -14,6 +14,7 @@ main() {
 	set_shell
 	alternatives
 	config_sudo
+	firewall
 	manual_installs
 	dotfiles
 	gpg
@@ -152,6 +153,12 @@ config_sudo() {
 	cat <<- EOF | tee /etc/sudoers.d/rosstimson
 		rosstimson	 ALL=(ALL) NOPASSWD:ALL
 	EOF
+}
+
+
+# Default is to deny incoming, allow all outgoing
+firewall() {
+	ufw enable
 }
 
 

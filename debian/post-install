@@ -2,18 +2,24 @@
 
 set -eu
 
+EMACS_VERSION="26.3"
+TERRAFORM_VERSION="0.12.24"
+CLOJURE_LSP_VERSION="release-20200314T202821"
+
 main() {
+	directories
 	packages
+	remove_cruft
 	correct_names
 	set_shell
 	alternatives
 	config_sudo
-	directories
-	xbanish
+	manual_installs
 	dotfiles
 	gpg
 	passwords
 	dev
+	fonts
 }
 
 # Install packages.
@@ -27,26 +33,94 @@ packages() {
 	< "${PWD}"/pkgs.txt xargs apt install -y || true
 }
 
+# Remove stuff that is not really needed but installed by default.
+remove_cruft() {
+	apt purge --autoremove exim4-base exim4-config exim4-daemon-light
+}
+
 
 # Debian obnoxiously renames loadsa shit, symlink to their proper names.
 correct_names() {
 	ln -sf /usr/bin/openbsd-cwm /usr/bin/cwm
+	ln -sf /usr/share/man/man1/openbsd-cwm.1.gz /usr/share/man/man1/cwm.1.gz
 	ln -sf /usr/bin/signify-openbsd /usr/bin/signify
+	ln -sf /usr/share/man/man1/signify-openbsd.1.gz /usr/share/man/man1/signify.1.gz
 	ln -sf /usr/bin/fdfind /usr/bin/fd
+	ln -sf /usr/share/man/man1/fdfind.1.gz /usr/share/man/man1/fd.1.gz
 	ln -sf /usr/bin/yarnpkg /usr/bin/yarn
+	ln -sf /usr/share/man/man1/yarnpkg.1.gz /usr/share/man/man1/yarn.1.gz
+	# Debian user gnupg2 by default so 'gpg' is acuallu gpg2, this causes an
+	# issue with things like my .gitconfig which explicity references 'gpg2'
+	# command so symlink to make configs work without change.
+	ln -sf /usr/bin/gpg /usr/bin/gpg2
 }
 
 
-# xbanish is not available in Debian repos
-xbanish() {
+# Installs things that are either unavailable or really outdated in the Debian repos.
+manual_installs() {
+	# Hashicorp Terraform (https://www.terraform.io)
+	if [ ! -x /usr/local/bin/terraform ]; then
+		cd /tmp \
+			&& wget https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip \
+			&& unzip terraform_${TERRAFORM_VERSION}_linux_amd64.zip \
+			&& mv terraform /usr/local/bin \
+			&& rm terraform_${TERRAFORM_VERSION}_linux_amd64.zip
+	fi
+
+	# GNU Emacs (https://www.gnu.org/software/emacs)
+	if [ ! -x /usr/local/bin/emacs ]; then
+		# Only fetch the src tarball if src code is not already present
+		if [ ! -d "/home/rosstimson/src/emacs-${EMACS_VERSION}" ]; then
+			cd /home/rosstimson/src \
+				&& wget https://www.mirrorservice.org/sites/ftp.gnu.org/gnu/emacs/emacs-${EMACS_VERSION}.tar.xz \
+				&& tar xJvf emacs-${EMACS_VERSION}.tar.xz \
+				&& rm emacs-${EMACS_VERSION}.tar.xz \
+				&& chown -R rosstimson:rosstimson emacs-${EMACS_VERSION}
+		fi
+		# Compile and install.
+		cd /home/rosstimson/src/emacs-${EMACS_VERSION} \
+			&& ./configure \
+			&& make \
+			&& make install
+	fi
+
+	# Lemonbar fork which includes xft font support.  Lemonbar is a
+	# program for creating lightweight status bars.
+	if [ ! -x /usr/local/bin/lemonbar ]; then
+		# Only clone the src repo if it hasn't been cloned already.
+		if [ ! -d '/home/rosstimson/src/bar' ]; then
+			cd /home/rosstimson/src \
+				&& git clone https://github.com/krypt-n/bar.git \
+				&& chown rosstimson:rosstimson bar
+		fi
+		# Compile and install.
+		cd /home/rosstimson/src/bar && make && PREFIX=/usr/local make install
+	fi
+
+	# Xbanish - like declutter, removes cursor in Xorg when not in use or when typing.
 	# If the executable is not already installed then compile and install.
 	if [ ! -x /usr/local/bin/xbanish ]; then
 		# Only clone the src repo if it hasn't been cloned already.
 		if [ ! -d '/home/rosstimson/src/xbanish' ]; then
-			su --pty -l rosstimson -c 'cd /home/rosstimson/src && git clone https://github.com/jcs/xbanish.git /home/rosstimson/src/xbanish'
+			cd /home/rosstimson/src \
+				&& git clone https://github.com/jcs/xbanish.git \
+				&& chown rosstimson:rosstimson xbanish
 		fi
 		# Compile and install.
 		cd /home/rosstimson/src/xbanish && make && make install
+	fi
+
+	# Slock (https://tools.suckless.org/slock/).  Slock is a very
+	# simple Xorg display locker.
+	if [ ! -x /usr/local/bin/slock ]; then
+		# Only clone the src repo if it hasn't been cloned already.
+		if [ ! -d '/home/rosstimson/src/slock' ]; then
+			cd /home/rosstimson/src \
+				&& git clone https://git.suckless.org/slock \
+				&& chown rosstimson:rosstimson slock
+		fi
+		# Compile and install.
+		cd /home/rosstimson/src/slock && make clean install
 	fi
 }
 
@@ -117,7 +191,7 @@ gpg() {
 	ln -sf /usr/lib/x86_64-linux-gnu/libpcsclite.so.1 /usr/lib/x86_64-linux-gnu/libpcsclite.so
 
 	# Import my public key if it is not already present.
-	su -l rosstimson -c 'gpg --list-keys 0x667A3481E4BB34F3 || gpg --recv-keys 0x667A3481E4BB34F3'
+	su -l rosstimson -c 'gpg --list-keys 0x667A3481E4BB34F3 || gpg --keyserver pool.sks-keyservers.net --recv-keys 0x667A3481E4BB34F3'
 }
 
 
@@ -133,36 +207,59 @@ passwords() {
 
 dev() {
 	# Install some essential Python tools
-	su -l rosstimson -c 'pip3 install --user -U pipx pipenv python-language-server pyls-black'
+	su -l rosstimson -c 'pip3 install --user -U pipx pipenv python-language-server pyls-black pre-commit'
 
 	# Install some JavaScript essential tools
 	su -l rosstimson -c 'yarn global add eslint typescript-language-server typescript'
 
 	# Rustup is the recommended way to install Rust
 	# Need to run this in a pty as my user as it is interactive.
-	su --pty -l rosstimson -c 'curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh'
+	if [ ! -x /home/rosstimson/.cargo/bin/rustup ]; then
+		su --pty -l rosstimson -c "curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh"
+	fi
+
+	# rust-analyzer (LSP server) needs Rust src for completions.
+	if ! su -l rosstimson -c 'rustup component list | grep installed | grep rust-src-foo'; then
+		su -l rosstimson -c 'rustup component add rust-src'
+	fi
 
 	# Rust - rust-analyzer (https://rust-analyzer.github.io)
-	if [ ! -x /home/rosstimson/.cargo/bin/ra_lsp_server ]; then
-		su --pty -l rosstimson -c 'git clone https://github.com/rust-analyzer/rust-analyzer /home/rosstimson/code/rust/rust-analyzer'
-		su -l rosstimson -c 'cd /home/rosstimson/code/rust/rust-analyzer && cargo xtask install --server'
+	if [ ! -x /home/rosstimson/.cargo/bin/rust-analyzer ]; then
+		# Only clone the src repo if not already present
+		if [ ! -d "/home/rosstimson/src/rust-analyzer" ]; then
+			cd /home/rosstimson/src \
+			   && git clone https://github.com/rust-analyzer/rust-analyzer \
+			   && chown -R rosstimson:rosstimson /home/rosstimson/src/rust-analyzer
+		fi
+		su -l rosstimson -c 'cd /home/rosstimson/src/rust-analyzer && cargo xtask install --server'
 	fi
 
 	# Install boot.sh for Clojure (https://boot-clj.com)
 	if [ ! -x /usr/local/bin/boot ]; then
-		cd /usr/local/bin && \
-		curl -fsSLo boot https://github.com/boot-clj/boot-bin/releases/download/latest/boot.sh && \
-		chmod 755 boot
+		cd /usr/local/bin \
+			&& curl -fsSLo boot https://github.com/boot-clj/boot-bin/releases/download/latest/boot.sh \
+			&& chmod 755 boot
 	fi
 
 	# Install language servers (LSP)
 	# Clojure - clojure-lsp
 	if [ ! -x /usr/local/bin/clojure-lsp ]; then
 		cd /usr/local/bin && \
-		curl -fsSLo clojure-lsp https://github.com/snoe/clojure-lsp/releases/download/release-20200314T202821/clojure-lsp && \
-		chmod 755 /usr/local/bin/clojure-lsp
+			curl -fsSLo clojure-lsp https://github.com/snoe/clojure-lsp/releases/download/${CLOJURE_LSP_VERSION}/clojure-lsp \
+				 &&	chmod 755 /usr/local/bin/clojure-lsp
 	fi
 }
 
 
+# Allow bitmap fonts and refresh font cache, this has to happen after
+# my dotfiles have been placed as I include some essential fonts in
+# ~/.fonts
+fonts() {
+	rm -f /etc/fonts/conf.d/70-no-bitmaps.conf
+	ln -sf /usr/share/fontconfig/conf.avail/70-yes-bitmaps.conf /etc/fonts/conf.d/
+	fc-cache -fv
+}
+
+
+# GO!!!  Provision this bad lad.
 main

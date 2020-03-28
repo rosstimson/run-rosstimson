@@ -133,6 +133,14 @@ manual_installs() {
 		# Compile and install.
 		cd /home/rosstimson/src/slock && make clean install
 	fi
+
+	# Spotify
+	if [ ! -x /usr/bin/spotify ]; then
+		curl -sS https://download.spotify.com/debian/pubkey.gpg | apt-key add -
+		echo "deb http://repository.spotify.com stable non-free" | tee /etc/apt/sources.list.d/spotify.list
+		apt update
+		apt install -y spotify-client || true
+	fi
 }
 
 

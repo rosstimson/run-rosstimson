@@ -262,6 +262,11 @@ dev() {
 		su -l rosstimson -c 'cd /home/rosstimson/src/rust-analyzer && cargo xtask install --server'
 	fi
 
+	# sscache - Shared compliation cache that can use cloud storage (https://github.com/mozilla/sccache)
+	if [ ! -x /home/rosstimson/.cargo/bin/sscache ]; then
+		su -l rosstimson -c 'cargo install sccache'
+	fi
+
 	# Install boot.sh for Clojure (https://boot-clj.com)
 	if [ ! -x /usr/local/bin/boot ]; then
 		cd /usr/local/bin \

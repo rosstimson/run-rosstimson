@@ -194,6 +194,27 @@ dev() {
     # Need to run this in a pty as my user as it is interactive.
     su --pty -l rosstimson -c 'rustup-init'
 
+	# rust-analyzer (LSP server) needs Rust src for completions.
+	if ! su -l rosstimson -c 'rustup component list | grep installed | grep rust-src-foo'; then
+		su -l rosstimson -c 'rustup component add rust-src'
+	fi
+
+	# Rust - rust-analyzer (https://rust-analyzer.github.io)
+	if [ ! -x /home/rosstimson/.cargo/bin/rust-analyzer ]; then
+		# Only clone the src repo if not already present
+		if [ ! -d "/home/rosstimson/src/rust-analyzer" ]; then
+			cd /home/rosstimson/src \
+			   && git clone https://github.com/rust-analyzer/rust-analyzer \
+			   && chown -R rosstimson:rosstimson /home/rosstimson/src/rust-analyzer
+		fi
+		su -l rosstimson -c 'cd /home/rosstimson/src/rust-analyzer && cargo xtask install --server'
+	fi
+
+	# sscache - Shared compliation cache that can use cloud storage (https://github.com/mozilla/sccache)
+	if [ ! -x /home/rosstimson/.cargo/bin/sscache ]; then
+		su -l rosstimson -c 'cargo install sccache'
+	fi
+
     # Install boot.sh for Clojure (https://boot-clj.com)
     if [ ! -x /usr/local/bin/boot ]; then
         cd /usr/local/bin && \
@@ -227,6 +248,5 @@ post_install_services() {
 }
 
 
-
-
+# GO!!!  Provision this bad lad.
 main

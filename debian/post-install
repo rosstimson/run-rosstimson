@@ -175,7 +175,7 @@ firewall() {
 
 # Create directories I normally have.
 directories() {
-	su -l rosstimson -c 'mkdir -p /home/rosstimson/{org,src,sync}'
+	su -l rosstimson -c 'mkdir -p /home/rosstimson/{org,sites,src,sync}'
 	su -l rosstimson -c 'mkdir -p /home/rosstimson/pictures/{screenshots,wallpapers}'
 	su -l rosstimson -c 'mkdir -p /home/rosstimson/code/{clojure,go,python,rust,shell,terraform,javascript}'
 }

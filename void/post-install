@@ -3,20 +3,20 @@
 set -eu
 
 main() {
-    network
-    upgrade
-    packages
-    sound
-    services
-    set_shell
-    config_doas
-    directories
-    dotfiles
-    gpg
-    passwords
-    flatpak
-    dev
-    post_install_services
+	network
+	upgrade
+	packages
+	sound
+	services
+	set_shell
+	config_doas
+	directories
+	dotfiles
+	gpg
+	passwords
+	flatpak
+	dev
+	post_install_services
 }
 
 
@@ -28,14 +28,14 @@ main() {
 # reason as the docs state this symlink is only necessary with older
 # versions.
 network() {
-    ln -sf /usr/share/dhcpcd/hooks/10-wpa_supplicant /usr/libexec/dhcpcd-hooks
+	ln -sf /usr/share/dhcpcd/hooks/10-wpa_supplicant /usr/libexec/dhcpcd-hooks
 }
 
 
 # Full system upgrade as the base install ISO is fairly dated and Void
 # is a 'rolling release' distro.
 upgrade() {
-    xbps-install -Suy || true
+	xbps-install -Suy || true
 }
 
 
@@ -43,156 +43,155 @@ upgrade() {
 # Also remove 'sudo' package which is installed by default, I don't
 # need it as I'm using 'doas'.
 packages() {
-    < "${PWD}"/pkgs.txt xargs xbps-install -Sy || true
+	< "${PWD}"/pkgs.txt xargs xbps-install -Sy || true
 }
 
 
 # Set my user's shell to OpenBSD ksh.
 set_shell() {
-    chsh -s /bin/loksh rosstimson
+	chsh -s /bin/loksh rosstimson
 }
 
 
 # Configure my user with doas, a simple sudo replacement from OpendBSD.
 config_doas() {
-    touch /etc/doas.conf
-    echo 'permit nopass rosstimson' > /etc/doas.conf
+	touch /etc/doas.conf
+	echo 'permit nopass rosstimson' > /etc/doas.conf
 }
 
 
 # Start and enable services.
 services() {
-    # Set temp file so that xdm doesn't start and load up graphical
-    # login whilst the rest of this script has not run.  This file
-    # will be cleaned up at the end of this script in the
-    # post_install_services function.
-    touch /etc/sv/xdm/down
+	# Set temp file so that xdm doesn't start and load up graphical
+	# login whilst the rest of this script has not run.	 This file
+	# will be cleaned up at the end of this script in the
+	# post_install_services function.
+	touch /etc/sv/xdm/down
 
-    ln -sf /etc/sv/xdm/ /var/service/
-    ln -sf /etc/sv/pcscd/ /var/service/
-    ln -sf /etc/sv/openntpd/ /var/service/
-    ln -sf /etc/sv/alsa/ /var/service/
-    ln -sf /etc/sv/dbus/ /var/service/
-    ln -sf /etc/sv/cgmanager/ /var/service/
-    ln -sf /etc/sv/consolekit/ /var/service/
-    ln -sf /etc/sv/pulseaudio/ /var/service/
-    ln -sf /etc/sv/socklog-unix/ /var/service/
-    ln -sf /etc/sv/nanoklogd/ /var/service/
+	ln -sf /etc/sv/xdm/ /var/service/
+	ln -sf /etc/sv/pcscd/ /var/service/
+	ln -sf /etc/sv/openntpd/ /var/service/
+	ln -sf /etc/sv/alsa/ /var/service/
+	ln -sf /etc/sv/dbus/ /var/service/
+	ln -sf /etc/sv/cgmanager/ /var/service/
+	ln -sf /etc/sv/consolekit/ /var/service/
+	ln -sf /etc/sv/pulseaudio/ /var/service/
+	ln -sf /etc/sv/socklog-unix/ /var/service/
+	ln -sf /etc/sv/nanoklogd/ /var/service/
 }
 
 
 # Create directories I normally have.
 directories() {
-    su -l rosstimson -c 'mkdir -p /home/rosstimson/org'
-    su -l rosstimson -c 'mkdir -p /home/rosstimson/sync'
-    su -l rosstimson -c 'mkdir -p /home/rosstimson/pictures/{screenshots,wallpapers}'
-    su -l rosstimson -c 'mkdir -p /home/rosstimson/code/{clojure,go,python,rust,shell}'
+	su -l rosstimson -c 'mkdir -p /home/rosstimson/{org,sites,src,sync}'
+	su -l rosstimson -c 'mkdir -p /home/rosstimson/pictures/{screenshots,wallpapers}'
+	su -l rosstimson -c 'mkdir -p /home/rosstimson/code/{clojure,go,python,rust,shell,terraform,javascript}'
 }
 
 
 dotfiles() {
-    # Add Github to known hosts.  Ensure the known_hosts file exists first of all.
-    su -l rosstimson -c 'touch /home/rosstimson/.ssh/known_hosts'
+	# Add Github to known hosts.  Ensure the known_hosts file exists first of all.
+	su -l rosstimson -c 'touch /home/rosstimson/.ssh/known_hosts'
 
-    echo 'github.com,140.82.118.3 ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAq2A7hRGmdnm9tUDbO9IDSwBK6TbQa+PXYPCPy6rbTrTtw7PHkccKrpp0yVhp5HdEIcKr6pLlVDBfOLX9QUsyCOV0wzfjIJNlGEYsdlLJizHhbn2mUjvSAHQqZETYP81eFzLQNnPHt4EVVUh7VfDESU84KezmD5QlWpXLmvU31/yMf+Se8xhHTvKSCZIFImWwoG6mbUoWf9nzpIoaSjB+weqqUUmpaaasXVal72J+UX2B+2RPW3RcT0eOzQgqlJL3RKrTJvdsjE3JEAvGq3lGHSZXy28G3skua2SmVi/w4yCE6gbODqnTWlg7+wC604ydGXA8VJiS5ap43JXiUFFAaQ==' >> /home/rosstimson/.ssh/known_hosts
+	echo 'github.com,140.82.118.3 ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAq2A7hRGmdnm9tUDbO9IDSwBK6TbQa+PXYPCPy6rbTrTtw7PHkccKrpp0yVhp5HdEIcKr6pLlVDBfOLX9QUsyCOV0wzfjIJNlGEYsdlLJizHhbn2mUjvSAHQqZETYP81eFzLQNnPHt4EVVUh7VfDESU84KezmD5QlWpXLmvU31/yMf+Se8xhHTvKSCZIFImWwoG6mbUoWf9nzpIoaSjB+weqqUUmpaaasXVal72J+UX2B+2RPW3RcT0eOzQgqlJL3RKrTJvdsjE3JEAvGq3lGHSZXy28G3skua2SmVi/w4yCE6gbODqnTWlg7+wC604ydGXA8VJiS5ap43JXiUFFAaQ==' >> /home/rosstimson/.ssh/known_hosts
 
-    # Clone dotfiles from Github if the directory is not present.
-    if [ ! -d '/home/rosstimson/code/dotfiles' ]
-    then
-        su --pty -l rosstimson -c 'git clone git@github.com:rosstimson/dotfiles.git /home/rosstimson/code/dotfiles'
-    fi
-    # Install dotfiles.
-    su -l rosstimson -c 'cd /home/rosstimson/code/dotfiles && make'
+	# Clone dotfiles from Github if the directory is not present.
+	if [ ! -d '/home/rosstimson/code/dotfiles' ]
+	then
+		su --pty -l rosstimson -c 'git clone git@github.com:rosstimson/dotfiles.git /home/rosstimson/code/dotfiles'
+	fi
+	# Install dotfiles.
+	su -l rosstimson -c 'cd /home/rosstimson/code/dotfiles && make'
 }
 
 
 # Do this after dotfiles as dotfiles includes GPG config.
 gpg() {
-    # NOTE: For GPG on Yubikey to work the following packages need to be installed:
-    # gnupg2, gnupg2-scdaemon, pcsclite, pcsc-ccid, elogind
-    #
-    # Also the pcscd service needs to be running for using GPG private
-    # keys on Yubikey smartcard, it is enabled/started in the services
-    # section/function.
+	# NOTE: For GPG on Yubikey to work the following packages need to be installed:
+	# gnupg2, gnupg2-scdaemon, pcsclite, pcsc-ccid, elogind
+	#
+	# Also the pcscd service needs to be running for using GPG private
+	# keys on Yubikey smartcard, it is enabled/started in the services
+	# section/function.
 
-    # Ensure my ~/.gnupg dir has the correct permissions otherwise it will error.
-    chmod 700 /home/rosstimson/.gnupg
+	# Ensure my ~/.gnupg dir has the correct permissions otherwise it will error.
+	chmod 700 /home/rosstimson/.gnupg
 
-    # From 'man 1 scdaemon':
-    # --pcsc-driver library Use library to access the smartcard reader.
-    # The current default is ‘libpcsclite.so’.  Instead of using this
-    # option you might also want to install a symbolic link to the
-    # default file name (e.g. from ‘libpcsclite.so.1’).
-    #
-    # Without this symlink GPG keys on Yubikey will not work.
-    ln -sf /usr/lib/libpcsclite.so.1 /usr/lib/libpcsclite.so
+	# From 'man 1 scdaemon':
+	# --pcsc-driver library Use library to access the smartcard reader.
+	# The current default is ‘libpcsclite.so’.	Instead of using this
+	# option you might also want to install a symbolic link to the
+	# default file name (e.g. from ‘libpcsclite.so.1’).
+	#
+	# Without this symlink GPG keys on Yubikey will not work.
+	ln -sf /usr/lib/libpcsclite.so.1 /usr/lib/libpcsclite.so
 
-    # Import my public key if it is not already present.
-    su -l rosstimson -c 'gpg2 --list-keys 0x667A3481E4BB34F3 || gpg2 --recv-keys 0x667A3481E4BB34F3'
+	# Import my public key if it is not already present.
+	su -l rosstimson -c 'gpg2 --list-keys 0x667A3481E4BB34F3 || gpg2 --recv-keys 0x667A3481E4BB34F3'
 
-    # My ~/.gnupg/gpg-agent.conf has the following for the pinentry program:
-    # pinentry-program /usr/bin/pinentry-curses
-    #
-    # This location is the default for OpenBSD but on Void Linux it is
-    # at /bin/pinentry-curses so symlink for this config to still
-    # work.
-    ln -sf /bin/pinentry-curses /usr/local/bin/
+	# My ~/.gnupg/gpg-agent.conf has the following for the pinentry program:
+	# pinentry-program /usr/bin/pinentry-curses
+	#
+	# This location is the default for OpenBSD but on Void Linux it is
+	# at /bin/pinentry-curses so symlink for this config to still
+	# work.
+	ln -sf /bin/pinentry-curses /usr/local/bin/
 }
 
 
 # Get password store (GPG encrypted and in a private Github repo)
 passwords() {
-    # Clone passwords from Github if the directory is not present.
-    if [ ! -d '/home/rosstimson/.password-store' ]
-    then
-        su --pty -l rosstimson -c 'git clone git@github.com:rosstimson/pwstore.git /home/rosstimson/.password-store'
-    fi
+	# Clone passwords from Github if the directory is not present.
+	if [ ! -d '/home/rosstimson/.password-store' ]
+	then
+		su --pty -l rosstimson -c 'git clone git@github.com:rosstimson/pwstore.git /home/rosstimson/.password-store'
+	fi
 }
 
 
 # Enable / config sound
 sound() {
-    # Unmute and set a default volume before the alsa service is
-    # enabled as per docs here: https://wiki.voidlinux.org/PulseAudio
-    #
-    # "Make sure your Wikipedia-logo.png alsa output device is not muted
-    # and then enable the alsa runit service to save and restore alsa
-    # levels and configuration between reboots"
-    amixer -c 1 set Master unmute
-    amixer -c 1 set Master 60%
+	# Unmute and set a default volume before the alsa service is
+	# enabled as per docs here: https://wiki.voidlinux.org/PulseAudio
+	#
+	# "Make sure your Wikipedia-logo.png alsa output device is not muted
+	# and then enable the alsa runit service to save and restore alsa
+	# levels and configuration between reboots"
+	amixer -c 1 set Master unmute
+	amixer -c 1 set Master 60%
 
-    usermod -a -G pulse-access rosstimson
+	usermod -a -G pulse-access rosstimson
 }
 
 
 # Flatpak apps
 # NOTE: Without the --pty this segfaults the script.
 flatpak() {
-    # Add Flathub repo
-    su --pty -l rosstimson -c 'flatpak remote-add --user --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo'
+	# Add Flathub repo
+	su --pty -l rosstimson -c 'flatpak remote-add --user --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo'
 
-    # Install Flatpak apps
-    su --pty -l rosstimson -c 'flatpak install -y --user flathub com.spotify.Client'
-    su --pty -l rosstimson -c 'flatpak install -y --user flathub com.slack.Slack'
-    su --pty -l rosstimson -c 'flatpak install -y --user flathub us.zoom.Zoom'
+	# Install Flatpak apps
+	su --pty -l rosstimson -c 'flatpak install -y --user flathub com.spotify.Client'
+	su --pty -l rosstimson -c 'flatpak install -y --user flathub com.slack.Slack'
+	su --pty -l rosstimson -c 'flatpak install -y --user flathub us.zoom.Zoom'
 }
 
 dev() {
-    # Set default Python
-    ln -sf /usr/bin/pip3 /usr/bin/pip
-    ln -sf /usr/bin/python3 /usr/bin/python
-    ln -sf /usr/bin/python3-config /usr/bin/python-config
-    ln -sf /usr/bin/pydoc3 /usr/bin/pydoc
+	# Set default Python
+	ln -sf /usr/bin/pip3 /usr/bin/pip
+	ln -sf /usr/bin/python3 /usr/bin/python
+	ln -sf /usr/bin/python3-config /usr/bin/python-config
+	ln -sf /usr/bin/pydoc3 /usr/bin/pydoc
 
-    # Install some essential Python tools
-    su -l rosstimson -c 'pip install --user -U pipx pipenv python-language-server pyls-black'
+	# Install some essential Python tools
+	su -l rosstimson -c 'pip install --user -U pipx pipenv python-language-server pyls-black'
 
-    # Install some JavaScript essential tools
-    su -l rosstimson -c 'npm install -g eslint typescript-language-server typescript'
+	# Install some JavaScript essential tools
+	su -l rosstimson -c 'npm install -g eslint typescript-language-server typescript'
 
-    # Rustup is installed but it needs initiated to download everything.
-    # Need to run this in a pty as my user as it is interactive.
-    su --pty -l rosstimson -c 'rustup-init'
+	# Rustup is installed but it needs initiated to download everything.
+	# Need to run this in a pty as my user as it is interactive.
+	su --pty -l rosstimson -c 'rustup-init'
 
 	# rust-analyzer (LSP server) needs Rust src for completions.
 	if ! su -l rosstimson -c 'rustup component list | grep installed | grep rust-src-foo'; then
@@ -215,38 +214,38 @@ dev() {
 		su -l rosstimson -c 'cargo install sccache'
 	fi
 
-    # Install boot.sh for Clojure (https://boot-clj.com)
-    if [ ! -x /usr/local/bin/boot ]; then
-        cd /usr/local/bin && \
-        curl -fsSLo boot https://github.com/boot-clj/boot-bin/releases/download/latest/boot.sh && \
-        chmod 755 boot
-    fi
+	# Install boot.sh for Clojure (https://boot-clj.com)
+	if [ ! -x /usr/local/bin/boot ]; then
+		cd /usr/local/bin && \
+		curl -fsSLo boot https://github.com/boot-clj/boot-bin/releases/download/latest/boot.sh && \
+		chmod 755 boot
+	fi
 
-    # Install language servers (LSP)
-    # Clojure - clojure-lsp
-    if [ ! -x /usr/local/bin/clojure-lsp ]; then
-        cd /usr/local/bin && \
-        curl -fsSLo clojure-lsp https://github.com/snoe/clojure-lsp/releases/download/release-20191202T142318/clojure-lsp && \
-        chmod 755 /usr/local/bin/clojure-lsp
-    fi
+	# Install language servers (LSP)
+	# Clojure - clojure-lsp
+	if [ ! -x /usr/local/bin/clojure-lsp ]; then
+		cd /usr/local/bin && \
+		curl -fsSLo clojure-lsp https://github.com/snoe/clojure-lsp/releases/download/release-20191202T142318/clojure-lsp && \
+		chmod 755 /usr/local/bin/clojure-lsp
+	fi
 
-    # Rust - rust-analyzer (https://rust-analyzer.github.io)
-    if [ ! -x /home/rosstimson/.cargo/bin/ra_lsp_server ]; then
-        su --pty -l rosstimson -c 'git clone https://github.com/rust-analyzer/rust-analyzer /home/rosstimson/code/rust/rust-analyzer'
-        su -l rosstimson -c 'cd /home/rosstimson/code/rust/rust-analyzer && cargo xtask install --server'
-    fi
+	# Rust - rust-analyzer (https://rust-analyzer.github.io)
+	if [ ! -x /home/rosstimson/.cargo/bin/ra_lsp_server ]; then
+		su --pty -l rosstimson -c 'git clone https://github.com/rust-analyzer/rust-analyzer /home/rosstimson/code/rust/rust-analyzer'
+		su -l rosstimson -c 'cd /home/rosstimson/code/rust/rust-analyzer && cargo xtask install --server'
+	fi
 }
 
 
 post_install_services() {
-    # Cleanup temp file that was added to stop xdm starting during the
-    # running of this script.
-    rm -f /etc/sv/xdm/down
+	# Cleanup temp file that was added to stop xdm starting during the
+	# running of this script.
+	rm -f /etc/sv/xdm/down
 
-    # Disable sshd
-    rm -f /var/service/sshd
+	# Disable sshd
+	rm -f /var/service/sshd
 }
 
 
-# GO!!!  Provision this bad lad.
+# GO!!!	 Provision this bad lad.
 main

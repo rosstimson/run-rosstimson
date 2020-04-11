@@ -56,10 +56,9 @@ config_touchpad() {
 
 # Create directories I normally have.
 dirs() {
-	su -l rosstimson -c 'mkdir -p /home/rosstimson/org'
-	su -l rosstimson -c 'mkdir -p /home/rosstimson/sync'
+	su -l rosstimson -c 'mkdir -p /home/rosstimson/{org,sites,src,sync}'
 	su -l rosstimson -c 'mkdir -p /home/rosstimson/pictures/{screenshots,wallpapers}'
-	su -l rosstimson -c 'mkdir -p /home/rosstimson/code/{clojure,go,python,rust,shell}'
+	su -l rosstimson -c 'mkdir -p /home/rosstimson/code/{clojure,go,python,rust,shell,terraform,javascript}'
 }
 
 

@@ -22,6 +22,7 @@ libpng-dev
 libreoffice
 libtiff-dev
 libxcb-xinerama0-dev
+libxml2-dev
 mg
 mksh
 ncat

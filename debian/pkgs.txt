@@ -6,6 +6,7 @@ dunst
 fd-find
 feh
 firefox-esr
+firefox-esr-l10n-en-gb
 fonts-font-awesome
 fonts-roboto
 fvwm

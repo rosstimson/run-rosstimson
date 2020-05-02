@@ -1,0 +1,320 @@
+#!/bin/sh
+
+set -e
+
+ALACRITTY_VERSION="v0.4.2"
+CLOJURE_LSP_VERSION="release-20200413T141742"
+DROPBOX_VERSION="2020.03.04"
+SLACK_VERSION="4.4.2"
+TERRAFORM_VERSION="0.12.24"
+
+
+main() {
+	directories
+	packages
+	correct_names
+	set_shell
+	alternatives
+	config_sudo
+	firewall
+	dev
+	manual_installs
+	dotfiles
+	gpg
+	passwords
+	fonts
+	wallpaper
+}
+
+# Install packages.
+packages() {
+	# Refresh package index first.
+	apt update
+
+	# Install from list of packages in a text file.
+	# OR true https://github.com/alacritty/alacritty- is so that the script doesn't error out when the package
+	# manager notices that a package is already install.d
+	< "${PWD}"/pkgs.txt xargs apt install -y || true
+}
+
+
+# Debian obnoxiously renames loadsa shit, symlink to their proper names.
+correct_names() {
+	ln -sf /usr/bin/openbsd-cwm /usr/bin/cwm
+	ln -sf /usr/share/man/man1/openbsd-cwm.1.gz /usr/share/man/man1/cwm.1.gz
+	ln -sf /usr/bin/signify-openbsd /usr/bin/signify
+	ln -sf /usr/share/man/man1/signify-openbsd.1.gz /usr/share/man/man1/signify.1.gz
+	ln -sf /usr/bin/fdfind /usr/bin/fd
+	ln -sf /usr/share/man/man1/fdfind.1.gz /usr/share/man/man1/fd.1.gz
+	ln -sf /usr/bin/yarnpkg /usr/bin/yarn
+	ln -sf /usr/share/man/man1/yarnpkg.1.gz /usr/share/man/man1/yarn.1.gz
+	# Ubuntu uses gnupg2 by default so 'gpg' is acuallu gpg2, this causes an
+	# issue with things like my .gitconfig which explicity references 'gpg2'
+	# command so symlink to make configs work without change.
+	ln -sf /usr/bin/gpg /usr/bin/gpg2
+}
+
+
+# Installs things that are either unavailable or really outdated in the Debian repos.
+manual_installs() {
+	# Alacritty (https://github.com/alacritty/alacritty)
+	# A cross-platform, GPU-accelerated terminal emulator written in Rust
+	if [ ! -x /usr/bin/alacritty ]; then
+		cd /tmp \
+			&& wget https://github.com/alacritty/alacritty/releases/download/${ALACRITTY_VERSION}/Alacritty-${ALACRITTY_VERSION}-ubuntu_18_04_amd64.deb \
+			&& apt install -y ./Alacritty-${ALACRITTY_VERSION}-ubuntu_18_04_amd64.deb \
+			&& rm Alacritty-${ALACRITTY_VERSION}-ubuntu_18_04_amd64.deb
+	fi
+
+
+	# Hashicorp Terraform (https://www.terraform.io)
+	if [ ! -x /usr/local/bin/terraform ]; then
+		cd /tmp \
+			&& wget https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip \
+			&& unzip terraform_${TERRAFORM_VERSION}_linux_amd64.zip \
+			&& mv terraform /usr/local/bin \
+			&& rm terraform_${TERRAFORM_VERSION}_linux_amd64.zip
+	fi
+
+	# AWS CLI v2
+	if [ ! -x /usr/local/bin/aws ]; then
+		cd /tmp \
+			&& wget https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip \
+			&& unzip awscli-exe-linux-x86_64.zip \
+			&& ./aws/install \
+			&& rm -rf aws awscli-exe-linux-x86_64.zip
+	fi
+
+
+	# Lemonbar fork which includes xft font support.  Lemonbar is a
+	# program for creating lightweight status bars.
+	if [ ! -x /usr/local/bin/lemonbar ]; then
+		# Only clone the src repo if it hasn't been cloned already.
+		if [ ! -d '/home/rosstimson/src/bar' ]; then
+			cd /home/rosstimson/src \
+				&& git clone https://github.com/krypt-n/bar.git \
+				&& chown -R rosstimson:rosstimson bar
+		fi
+		# Compile and install.
+		cd /home/rosstimson/src/bar && make && PREFIX=/usr/local make install
+	fi
+
+	# Xbanish https://github.com/alacritty/alacritty- like declutter, removes cursor in Xorg when not in use or when typing.
+	# If the executable is not already installed then compile and install.
+	if [ ! -x /usr/local/bin/xbanish ]; then
+		# Only clone the src repo if it hasn't been cloned already.
+		if [ ! -d '/home/rosstimson/src/xbanish' ]; then
+			cd /home/rosstimson/src \
+				&& git clone https://github.com/jcs/xbanish.git \
+				&& chown -R rosstimson:rosstimson xbanish
+		fi
+		# Compile and install.
+		cd /home/rosstimson/src/xbanish && make && make install
+	fi
+
+
+	# Spotify
+	if [ ! -x /usr/bin/spotify ]; then
+		curl -sS https://download.spotify.com/debian/pubkey.gpg | apt-key add https://github.com/alacritty/alacritty-
+		echo "deb http://repository.spotify.com stable non-free" | tee /etc/apt/sources.list.d/spotify.list
+		apt update
+		apt install -y spotify-client || true
+	fi
+
+
+	# Slack
+	if [ ! -x /usr/bin/slack ]; then
+		cd /tmp \
+			&& wget https://downloads.slack-edge.com/linux_releases/slack-desktop-${SLACK_VERSION}-amd64.deb \
+			&& apt install -y ./slack-desktop-${SLACK_VERSION}-amd64.deb \
+			&& rm slack-desktop-${SLACK_VERSION}-amd64.deb
+	fi
+
+	# Zoom
+	if [ ! -x /usr/bin/zoom ]; then
+		cd /tmp \
+			&& wget https://zoom.us/client/latest/zoom_amd64.deb \
+			&& apt install -y ./zoom_amd64.deb \
+			&& rm zoom_amd64.deb
+	fi
+
+
+	# Signal
+	if [ ! -x /usr/bin/signal-desktop ]; then
+		curl -s https://updates.signal.org/desktop/apt/keys.asc | apt-key add - \
+			&& echo "deb [arch=amd64] https://updates.signal.org/desktop/apt xenial main" | tee -a /etc/apt/sources.list.d/signal-xenial.list \
+			&& apt update \
+			&& apt install -y signal-desktop
+	fi
+
+
+	# Dropbox
+	if [ ! -x /usr/bin/dropbox ]; then
+		cd /tmp \
+			&& wget https://linux.dropbox.com/packages/ubuntu/dropbox_${DROPBOX_VERSION}_amd64.deb \
+			&& apt install -y ./dropbox_${DROPBOX_VERSION}_amd64.deb \
+			&& rm dropbox_${DROPBOX_VERSION}_amd64.deb
+	fi
+}
+
+
+# Set my user's shell to zsh.
+set_shell() {
+	chsh -s /usr/bin/zsh rosstimson
+}
+
+
+# Set any alternatives
+alternatives() {
+	update-alternatives --set editor /usr/bin/mg
+}
+
+
+# Configure my user for sudo without a password
+config_sudo() {
+	cat <<- EOF | tee /etc/sudoers.d/rosstimson
+		rosstimson	 ALL=(ALL) NOPASSWD:ALL
+	EOF
+}
+
+
+# ufw is a way to simplify the management of iptables.
+firewall() {
+	# Default is to deny incoming, allow all outgoing.
+	ufw enable
+	# Allow all from local network.
+	ufw allow from 192.168.0.0/24
+}
+
+
+# Create directories I normally have.
+directories() {
+	su -l rosstimson -c 'mkdir -p /home/rosstimson/{org,sites,src,sync}'
+	su -l rosstimson -c 'mkdir -p /home/rosstimson/Pictures/{screenshots,wallpapers}'
+	su -l rosstimson -c 'mkdir -p /home/rosstimson/code/{clojure,go,python,rust,shell,terraform,javascript}'
+}
+
+
+dotfiles() {
+	# Add Github to known hosts.  Ensure the known_hosts file exists first of all.
+	su -l rosstimson -c 'touch /home/rosstimson/.ssh/known_hosts'
+
+	echo 'github.com,140.82.118.3 ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAq2A7hRGmdnm9tUDbO9IDSwBK6TbQa+PXYPCPy6rbTrTtw7PHkccKrpp0yVhp5HdEIcKr6pLlVDBfOLX9QUsyCOV0wzfjIJNlGEYsdlLJizHhbn2mUjvSAHQqZETYP81eFzLQNnPHt4EVVUh7VfDESU84KezmD5QlWpXLmvU31/yMf+Se8xhHTvKSCZIFImWwoG6mbUoWf9nzpIoaSjB+weqqUUmpaaasXVal72J+UX2B+2RPW3RcT0eOzQgqlJL3RKrTJvdsjE3JEAvGq3lGHSZXy28G3skua2SmVi/w4yCE6gbODqnTWlg7+wC604ydGXA8VJiS5ap43JXiUFFAaQ==' >> /home/rosstimson/.ssh/known_hosts
+
+	# Clone dotfiles from Github if the directory is not present.
+	if [ ! -d '/home/rosstimson/code/dotfiles' ]
+	then
+		su --pty -l rosstimson -c 'git clone git@github.com:rosstimson/dotfiles.git /home/rosstimson/code/dotfiles'
+	fi
+	# Install dotfiles.
+	su -l rosstimson -c 'cd /home/rosstimson/code/dotfiles && make'
+}
+
+
+# Do this after dotfiles as dotfiles includes GPG config.
+gpg() {
+	# NOTE: For GPG on Yubikey to work the following packages need to be installed:
+	# gnupg pcscd scdaemon
+	#
+	# Also the pcscd service needs to be running for using GPG private
+	# keys on Yubikey smartcard, it is enabled/started upon
+	# installation on Debian.
+
+	# Ensure my ~/.gnupg dir has the correct permissions otherwise it will error.
+	chmod 700 /home/rosstimson/.gnupg
+
+	# From 'man 1 scdaemon':
+	# --pcsc-driver library Use library to access the smartcard reader.
+	# The current default is ‘libpcsclite.so’.	Instead of using this
+	# option you might also want to install a symbolic link to the
+	# default file name (e.g. from ‘libpcsclite.so.1’).
+	#
+	# Without this symlink GPG keys on Yubikey will not work.
+	ln -sf /usr/lib/x86_64-linux-gnu/libpcsclite.so.1 /usr/lib/x86_64-linux-gnu/libpcsclite.so
+
+	# Import my public key if it is not already present.
+	su -l rosstimson -c 'gpg --list-keys 0x667A3481E4BB34F3 || gpg --keyserver pool.sks-keyservers.net --recv-keys 0x667A3481E4BB34F3'
+}
+
+
+# Get password store (GPG encrypted and in a private Github repo)
+passwords() {
+	# Clone passwords from Github if the directory is not present.
+	if [ ! -d '/home/rosstimson/.password-store' ]
+	then
+		su --pty -l rosstimson -c 'git clone git@github.com:rosstimson/pwstore.git /home/rosstimson/.password-store'
+	fi
+}
+
+
+dev() {
+	# Install some essential Python tools
+	su -l rosstimson -c 'pip3 install --user -U pipx pipenv python-language-server pyls-black pre-commit'
+
+	# Install some JavaScript essential tools
+	su -l rosstimson -c 'yarn global add eslint typescript-language-server typescript'
+
+	# Rustup is the recommended way to install Rust
+	# Need to run this in a pty as my user as it is interactive.
+	if [ ! -x /home/rosstimson/.cargo/bin/rustup ]; then
+		su --pty -l rosstimson -c "curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh"
+	fi
+
+	# rust-analyzer (LSP server) needs Rust src for completions.
+	if ! su -l rosstimson -c 'rustup component list | grep installed | grep rust-src-foo'; then
+		su -l rosstimson -c 'rustup component add rust-src'
+	fi
+
+	# sscache https://github.com/alacritty/alacritty- Shared compliation cache that can use cloud storage (https://github.com/mozilla/sccache)
+	if [ ! -x /home/rosstimson/.cargo/bin/sscache ]; then
+		su -l rosstimson -c 'cargo install sccache'
+	fi
+
+	# Rust https://github.com/alacritty/alacritty- rust-analyzer (https://rust-analyzer.github.io)
+	if [ ! -x /home/rosstimson/.cargo/bin/rust-analyzer ]; then
+		# Only clone the src repo if not already present
+		if [ ! -d "/home/rosstimson/src/rust-analyzer" ]; then
+			cd /home/rosstimson/src \
+			   && git clone https://github.com/rust-analyzer/rust-analyzer \
+			   && chown -R rosstimson:rosstimson /home/rosstimson/src/rust-analyzer
+		fi
+		su -l rosstimson -c 'cd /home/rosstimson/src/rust-analyzer && cargo xtask install --server'
+	fi
+
+	# Install boot.sh for Clojure (https://boot-clj.com)
+	if [ ! -x /usr/local/bin/boot ]; then
+		cd /usr/local/bin \
+			&& curl -fsSLo boot https://github.com/boot-clj/boot-bin/releases/download/latest/boot.sh \
+			&& chmod 755 boot
+	fi
+
+	# Install language servers (LSP)
+	# Clojure https://github.com/alacritty/alacritty- clojure-lsp
+	if [ ! -x /usr/local/bin/clojure-lsp ]; then
+		cd /usr/local/bin && \
+			curl -fsSLo clojure-lsp https://github.com/snoe/clojure-lsp/releases/download/${CLOJURE_LSP_VERSION}/clojure-lsp \
+				 &&	chmod 755 /usr/local/bin/clojure-lsp
+	fi
+}
+
+
+# Allow bitmap fonts and refresh font cache, this has to happen after
+# my dotfiles have been placed as I include some essential fonts in
+# ~/.fonts
+fonts() {
+	rm -f /etc/fonts/conf.d/70-no-bitmaps.conf
+	ln -sf /usr/share/fontconfig/conf.avail/70-yes-bitmaps.conf /etc/fonts/conf.d/
+	fc-cache -fv
+}
+
+
+# Download and set default wallpaper.
+wallpaper() {
+	su -l rosstimson -c "cd /home/rosstimson/Pictures/wallpapers \
+	   && wget https://ross.run/denys-nevozhai-unsplash-toyko-night.jpg \
+	   && ln -sf denys-nevozhai-unsplash-toyko-night.jpg wallpaper"
+}
+
+
+# GO!!!  Provision this bad lad.
+main

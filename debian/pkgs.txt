@@ -37,6 +37,7 @@ nodejs
 npm
 openjdk-11-jdk-headless
 opus-tools
+pandoc
 pass
 pavucontrol
 pciutils

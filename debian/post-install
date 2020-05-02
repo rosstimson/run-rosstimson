@@ -295,11 +295,10 @@ fonts() {
 
 
 # Download and set default wallpaper.
-# NOTE this downloads from a private S3 bucket so needs my AWS profile/creds setup.
 wallpaper() {
-	su -l rosstimson -c "cd /home/rosstimson/pictures/wallpapers \
-	   && aws --profile rosstimson s3 cp s3://pictures-rosstimson/wallpapers/unsplash/denys-nevozhai-toyko-night.jpg . \
-	   && ln -sf denys-nevozhai-toyko-night.jpg wallpaper"
+	su -l rosstimson -c "cd /home/rosstimson/Pictures/wallpapers \
+	   && wget https://ross.run/denys-nevozhai-unsplash-toyko-night.jpg \
+	   && ln -sf denys-nevozhai-unsplash-toyko-night.jpg wallpaper"
 }
 
 

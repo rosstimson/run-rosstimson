@@ -20,7 +20,7 @@ script.
 ### Ubuntu
 
     sudo su -
-    curl https://ross.run/ubuntu/post-install | sh
+    wget -qO- https://ross.run/ubuntu/install | sh
 
 
 ### Wallpaper Credit

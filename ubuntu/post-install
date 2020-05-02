@@ -35,7 +35,7 @@ packages() {
 	# OR true is so the script doesn't error out when the package
 	# manager notices that a package is already install.d
 	cd /tmp \
-	   && curl -SsO https://ross.run/ubuntu/pkgs.txt \
+	   && wget https://ross.run/ubuntu/pkgs.txt \
 	   && < ./pkgs.txt xargs apt install -y || true \
 	   && rm ./pkgs.txt
 }
@@ -236,7 +236,7 @@ gpg() {
 	ln -sf /usr/lib/x86_64-linux-gnu/libpcsclite.so.1 /usr/lib/x86_64-linux-gnu/libpcsclite.so
 
 	# Import my public key if it is not already present.
-	su -l rosstimson -c 'gpg --list-keys 0x667A3481E4BB34F3 || gpg --keyserver pool.sks-keyservers.net --recv-keys 0x667A3481E4BB34F3'
+	su -l rosstimson -c 'gpg --keyserver pool.sks-keyservers.net --recv-keys 0x667A3481E4BB34F3'
 }
 
 
@@ -264,13 +264,15 @@ dev() {
 	fi
 
 	# rust-analyzer (LSP server) needs Rust src for completions.
-	if ! su -l rosstimson -c 'rustup component list | grep installed | grep rust-src-foo'; then
-		su -l rosstimson -c 'rustup component add rust-src'
+	if ! /home/rosstimson/.cargo/bin/rustup component list | grep installed | grep rust-src; then
+		su -l rosstimson -c 'export PATH="/home/rosstimson/.cargo/bin:$PATH" \
+			&& rustup component add rust-src'
 	fi
 
 	# sscache - Shared compilation cache that can use cloud storage (https://github.com/mozilla/sccache)
 	if [ ! -x /home/rosstimson/.cargo/bin/sscache ]; then
-		su -l rosstimson -c 'cargo install sccache'
+		su -l rosstimson -c 'export PATH="/home/rosstimson/.cargo/bin:$PATH" \
+			&& cargo install sccache'
 	fi
 
 	# Rust - rust-analyzer (https://rust-analyzer.github.io)
@@ -281,7 +283,10 @@ dev() {
 			   && git clone https://github.com/rust-analyzer/rust-analyzer \
 			   && chown -R rosstimson:rosstimson /home/rosstimson/src/rust-analyzer
 		fi
-		su -l rosstimson -c 'cd /home/rosstimson/src/rust-analyzer && cargo xtask install --server'
+		su -l rosstimson -c 'export PATH="/home/rosstimson/.cargo/bin:$PATH" \
+			&& cd /home/rosstimson/src/rust-analyzer \
+			&& cargo xtask install --server'
+
 	fi
 
 	# Install boot.sh for Clojure (https://boot-clj.com)

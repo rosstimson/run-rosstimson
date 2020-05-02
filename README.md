@@ -12,16 +12,55 @@ The script needs access to some private repos and therefore my SSH
 keys need putting on the new machine before running the `post-install`
 script.
 
-    mkdir -p /home/rosstimson/.ssh
-    && chmod 400 /home/rosstimson/.ssh
+    mkdir -p /home/rosstimson/.ssh \
+    && chmod 700 /home/rosstimson/.ssh
 
-    <COPY PRIVATE KEYS FROM USB>
+    <COPY PRIVATE KEYS FROM USB INTO DIR>
+
+The install scripts can be verified via `signify` and `sha256sum` but
+the secret signify key is needed:
+
+    mkdir -p /home/rosstimon/.signify \
+    && chmod 700 /home/rosstimon/.signify
+
+    <COPY PRIVATE KEYS FROM USB INTO DIR>
 
 ### Ubuntu
 
-    sudo su -
-    wget -qO- https://ross.run/ubuntu/install | sh
+Get the install script:
 
+    sudo su -
+    wget https://ross.run/ubuntu/install
+
+*Optional*: Grab the signify public key to verify the install scripts integrity:
+
+    apt update
+    apt install -y signify-openbsd
+
+    wget https://ross.run/rosstimson.pub
+    wget https://ross.run/ubuntu/SHA256
+    wget https://ross.run/ubuntu/SHA256.sig
+
+    signify-openbsd -V -p rosstimson.pub -m SHA256
+    Signature Verified
+
+    sha256sum -c SHA256
+    install: OK
+
+Run the script:
+
+    chmod +x install
+    ./install
+
+## Signing Scripts
+
+Assuming the secret `signify` key exists at:
+`~/.signify/rosstimson.sec` new versions of the install scripts can
+have a signed checksum file generated to verify the script has not
+been tampered with at a later date by doing:
+
+    sha256sum install > SHA256
+    signify -S -s ~/rosstimson.sec -m SHA256 -x SHA256.sig
 
 ### Wallpaper Credit
 

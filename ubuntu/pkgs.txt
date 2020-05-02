@@ -1,4 +1,5 @@
 arandr
+audacity
 build-essential
 cmus
 curl

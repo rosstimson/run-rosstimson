@@ -32,9 +32,12 @@ packages() {
 	apt update
 
 	# Install from list of packages in a text file.
-	# OR true https://github.com/alacritty/alacritty- is so that the script doesn't error out when the package
+	# OR true is so the script doesn't error out when the package
 	# manager notices that a package is already install.d
-	< "${PWD}"/pkgs.txt xargs apt install -y || true
+	cd /tmp \
+	   && curl -SsO https://ross.run/ubuntu/pkgs.txt \
+	   && < ./pkgs.txt xargs apt install -y || true \
+	   && rm ./pkgs.txt
 }
 
 
@@ -99,7 +102,7 @@ manual_installs() {
 		cd /home/rosstimson/src/bar && make && PREFIX=/usr/local make install
 	fi
 
-	# Xbanish https://github.com/alacritty/alacritty- like declutter, removes cursor in Xorg when not in use or when typing.
+	# Xbanish like unclutter, removes cursor in Xorg when not in use or when typing.
 	# If the executable is not already installed then compile and install.
 	if [ ! -x /usr/local/bin/xbanish ]; then
 		# Only clone the src repo if it hasn't been cloned already.
@@ -115,7 +118,7 @@ manual_installs() {
 
 	# Spotify
 	if [ ! -x /usr/bin/spotify ]; then
-		curl -sS https://download.spotify.com/debian/pubkey.gpg | apt-key add https://github.com/alacritty/alacritty-
+		curl -sS https://download.spotify.com/debian/pubkey.gpg | apt-key add -
 		echo "deb http://repository.spotify.com stable non-free" | tee /etc/apt/sources.list.d/spotify.list
 		apt update
 		apt install -y spotify-client || true
@@ -265,12 +268,12 @@ dev() {
 		su -l rosstimson -c 'rustup component add rust-src'
 	fi
 
-	# sscache https://github.com/alacritty/alacritty- Shared compliation cache that can use cloud storage (https://github.com/mozilla/sccache)
+	# sscache - Shared compilation cache that can use cloud storage (https://github.com/mozilla/sccache)
 	if [ ! -x /home/rosstimson/.cargo/bin/sscache ]; then
 		su -l rosstimson -c 'cargo install sccache'
 	fi
 
-	# Rust https://github.com/alacritty/alacritty- rust-analyzer (https://rust-analyzer.github.io)
+	# Rust - rust-analyzer (https://rust-analyzer.github.io)
 	if [ ! -x /home/rosstimson/.cargo/bin/rust-analyzer ]; then
 		# Only clone the src repo if not already present
 		if [ ! -d "/home/rosstimson/src/rust-analyzer" ]; then
@@ -289,7 +292,7 @@ dev() {
 	fi
 
 	# Install language servers (LSP)
-	# Clojure https://github.com/alacritty/alacritty- clojure-lsp
+	# Clojure - clojure-lsp
 	if [ ! -x /usr/local/bin/clojure-lsp ]; then
 		cd /usr/local/bin && \
 			curl -fsSLo clojure-lsp https://github.com/snoe/clojure-lsp/releases/download/${CLOJURE_LSP_VERSION}/clojure-lsp \

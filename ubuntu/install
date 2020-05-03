@@ -158,6 +158,23 @@ manual_installs() {
 			&& apt install -y ./dropbox_${DROPBOX_VERSION}_amd64.deb \
 			&& rm dropbox_${DROPBOX_VERSION}_amd64.deb
 	fi
+
+
+	# Lowdown (https://kristaps.bsd.lv/lowdown/)
+	# Markdown translator used by SSG static site generator tool I use.
+	if [ ! -x /usr/local/bin/lowdown ]; then
+		# Only fetch the src tarball if src code is not already present
+		if [ ! -d "/home/rosstimson/src/lowdown" ]; then
+			cd /home/rosstimson/src \
+				&& git clone https://github.com/kristapsdz/lowdown.git \
+				&& chown -R rosstimson:rosstimson lowdown
+		fi
+		cd /home/rosstimson/src/lowdown/ \
+		   && ./configure \
+		   && make \
+		   && make regress \
+		   && make install
+	fi
 }
 
 

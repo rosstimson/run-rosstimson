@@ -17,13 +17,8 @@ script.
 
     <COPY PRIVATE KEYS FROM USB INTO DIR>
 
-The install scripts can be verified via `signify` and `sha256sum` but
-the secret signify key is needed:
-
-    mkdir -p /home/rosstimon/.signify \
-    && chmod 700 /home/rosstimon/.signify
-
-    <COPY PRIVATE KEYS FROM USB INTO DIR>
+Remember to also copy across secret Signify key to
+`~/.signify/rosstimson.sec` for signing new versions of these scripts.
 
 ### Ubuntu
 
@@ -60,7 +55,7 @@ have a signed checksum file generated to verify the script has not
 been tampered with at a later date by doing:
 
     sha256sum install > SHA256
-    signify -S -s ~/rosstimson.sec -m SHA256 -x SHA256.sig
+    signify -S -s ~/.signify/rosstimson.sec -m SHA256 -x SHA256.sig
 
 ### Wallpaper Credit
 

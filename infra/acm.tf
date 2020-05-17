@@ -1,6 +1,6 @@
 # Note the switch to an aliased provider here.  This is just to
-# quickly switch to the us-east-1 region as API Gateway custom DNS
-# needs the ACM cert in us-east-1.
+# quickly switch to the us-east-1 region as Cloudfront needs the ACM
+# cert in us-east-1.
 resource "aws_acm_certificate" "ross_run_cert" {
   provider          = aws.acm
   domain_name       = var.domain
@@ -16,6 +16,7 @@ resource "aws_acm_certificate" "ross_run_cert" {
   }
 }
 
+# Get the R53 zone ID as this will be needed in a few places.
 data "aws_route53_zone" "zone" {
   name         = var.domain
   private_zone = false

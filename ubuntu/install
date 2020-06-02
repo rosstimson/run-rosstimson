@@ -175,6 +175,80 @@ manual_installs() {
 		   && make regress \
 		   && make install
 	fi
+
+
+	# Modern utilities written in Rust
+	# Ripgrep (https://github.com/BurntSushi/ripgrep): 'grep' replacement
+	if [ ! -x /home/rosstimson/.cargo/bin/rg ]; then
+		su -l rosstimson -c 'export PATH="/home/rosstimson/.cargo/bin:$PATH" \
+			&& cargo install ripgrep'
+	fi
+
+	# Bottom (https://github.com/ClementTsang/bottom): 'top' replacement
+	if [ ! -x /home/rosstimson/.cargo/bin/btm ]; then
+		su -l rosstimson -c 'export PATH="/home/rosstimson/.cargo/bin:$PATH" \
+			&& cargo install bottom'
+	fi
+
+	# Procs (https://github.com/dalance/procs): 'ps' replacement
+	if [ ! -x /home/rosstimson/.cargo/bin/procs ]; then
+		su -l rosstimson -c 'export PATH="/home/rosstimson/.cargo/bin:$PATH" \
+			&& cargo install procs'
+	fi
+
+	# Skim (https://github.com/lotabout/skim): Fuzzy finder similar to FZF
+	if [ ! -x /home/rosstimson/.cargo/bin/sk ]; then
+		su -l rosstimson -c 'export PATH="/home/rosstimson/.cargo/bin:$PATH" \
+			&& cargo install skim'
+	fi
+
+	# Exa (https://github.com/ogham/exa): 'ls' replacement
+	if [ ! -x /home/rosstimson/.cargo/bin/exa ]; then
+		su -l rosstimson -c 'export PATH="/home/rosstimson/.cargo/bin:$PATH" \
+			&& cargo install exa'
+	fi
+
+	# Bat (https://github.com/sharkdp/bat): 'cat' replacement
+	if [ ! -x /home/rosstimson/.cargo/bin/bat ]; then
+		su -l rosstimson -c 'export PATH="/home/rosstimson/.cargo/bin:$PATH" \
+			&& cargo install --locked bat'
+	fi
+
+	# Dust (https://github.com/bootandy/dust): 'du' replacement
+	if [ ! -x /home/rosstimson/.cargo/bin/dust ]; then
+		su -l rosstimson -c 'export PATH="/home/rosstimson/.cargo/bin:$PATH" \
+			&& cargo install du-dust'
+	fi
+
+	# Hyperfine (https://github.com/sharkdp/hyperfine): 'time' replacement
+	if [ ! -x /home/rosstimson/.cargo/bin/hyperfine ]; then
+		su -l rosstimson -c 'export PATH="/home/rosstimson/.cargo/bin:$PATH" \
+			&& cargo install hyperfine'
+	fi
+
+	# Licensor (https://github.com/raftario/licensor): Write licenses to stdout
+	if [ ! -x /home/rosstimson/.cargo/bin/licensor ]; then
+		su -l rosstimson -c 'export PATH="/home/rosstimson/.cargo/bin:$PATH" \
+			&& cargo install licensor'
+	fi
+
+	# Tokei (https://github.com/XAMPPRocky/tokei): Count your code quickly
+	if [ ! -x /home/rosstimson/.cargo/bin/tokei ]; then
+		su -l rosstimson -c 'export PATH="/home/rosstimson/.cargo/bin:$PATH" \
+			&& cargo install tokei'
+	fi
+
+	# Sd (https://github.com/chmln/sd): 'sed' replacement
+	if [ ! -x /home/rosstimson/.cargo/bin/sd ]; then
+		su -l rosstimson -c 'export PATH="/home/rosstimson/.cargo/bin:$PATH" \
+			&& cargo install sd'
+	fi
+
+	# Zoxide (https://github.com/ajeetdsouza/zoxide): Jump to commonly used dirs quickly
+	if [ ! -x /home/rosstimson/.cargo/bin/zoxide ]; then
+		su -l rosstimson -c 'export PATH="/home/rosstimson/.cargo/bin:$PATH" \
+			&& cargo install zoxide'
+	fi
 }
 
 

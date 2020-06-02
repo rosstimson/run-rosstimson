@@ -1,6 +1,8 @@
 arandr
 audacity
 build-essential
+ccls
+clang
 cmus
 curl
 cwm
@@ -20,8 +22,11 @@ golang-go
 hunspell
 hunspell-en-gb
 inkscape
+jq
 lame
+libclang-dev
 libgif-dev
+libgit2-dev
 libgnutls28-dev
 libgtk-3-dev
 libjpeg-dev
@@ -33,6 +38,7 @@ libx11-xcb-dev
 libxcb-randr0-dev
 libxcb-xinerama0-dev
 libxml2-dev
+llvm
 mg
 mksh
 ncat
@@ -52,7 +58,6 @@ pwgen
 python3
 python3-gpg
 python3-pip
-ripgrep
 rofi
 rxvt-unicode-256color
 scdaemon
@@ -73,6 +78,7 @@ ufw
 unzip
 vim
 vorbis-tools
+w3m-img
 wget
 xautolock
 xbacklight

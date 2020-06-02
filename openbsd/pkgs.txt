@@ -32,3 +32,4 @@ w3m--image
 xbanish
 xbindkeys
 zathura
+zoxide

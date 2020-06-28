@@ -343,7 +343,7 @@ passwords() {
 
 dev() {
 	# Install some essential Python tools
-	su -l rosstimson -c 'pip3 install --user -U pipx pipenv python-language-server pyls-black pre-commit'
+	su -l rosstimson -c 'pip3 install --user -U pipx pipenv proselint python-language-server pyls-black pre-commit'
 
 	# Install some JavaScript essential tools
 	su -l rosstimson -c 'yarn global add eslint typescript-language-server typescript'

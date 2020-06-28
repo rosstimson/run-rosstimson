@@ -24,6 +24,7 @@ main() {
 	passwords
 	fonts
 	wallpaper
+	disable_default_ssh_agent
 }
 
 # Install packages.
@@ -412,6 +413,12 @@ wallpaper() {
 	su -l rosstimson -c "cd /home/rosstimson/Pictures/wallpapers \
 	   && wget https://ross.run/denys-nevozhai-unsplash-toyko-night.jpg \
 	   && ln -sf denys-nevozhai-unsplash-toyko-night.jpg wallpaper"
+}
+
+# ssh-agent is started by default on Ubuntu but I have it start within
+# my shell config so disable the Ubuntu default to avoid duplicates.
+disable_default_ssh_agent() {
+	sed -i "/^use-ssh-agent/ c#use-ssh-agent" /etc/X11/Xsession.options
 }
 
 

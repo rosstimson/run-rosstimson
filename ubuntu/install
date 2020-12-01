@@ -2,11 +2,10 @@
 
 set -e
 
-ALACRITTY_VERSION="v0.4.2"
-CLOJURE_LSP_VERSION="release-20200413T141742"
-DROPBOX_VERSION="2020.03.04"
-SLACK_VERSION="4.4.2"
-TERRAFORM_VERSION="0.12.24"
+ALACRITTY_VERSION="v0.6.0"
+CLOJURE_LSP_VERSION="release-20201009T224414"
+SLACK_VERSION="4.11.3"
+TERRAFORM_VERSION="0.13.5"
 
 
 main() {
@@ -149,15 +148,6 @@ manual_installs() {
 			&& echo "deb [arch=amd64] https://updates.signal.org/desktop/apt xenial main" | tee -a /etc/apt/sources.list.d/signal-xenial.list \
 			&& apt update \
 			&& apt install -y signal-desktop
-	fi
-
-
-	# Dropbox
-	if [ ! -x /usr/bin/dropbox ]; then
-		cd /tmp \
-			&& wget https://linux.dropbox.com/packages/ubuntu/dropbox_${DROPBOX_VERSION}_amd64.deb \
-			&& apt install -y ./dropbox_${DROPBOX_VERSION}_amd64.deb \
-			&& rm dropbox_${DROPBOX_VERSION}_amd64.deb
 	fi
 
 

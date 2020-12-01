@@ -49,10 +49,6 @@ correct_names() {
 	ln -sf /usr/share/man/man1/fdfind.1.gz /usr/share/man/man1/fd.1.gz
 	ln -sf /usr/bin/yarnpkg /usr/bin/yarn
 	ln -sf /usr/share/man/man1/yarnpkg.1.gz /usr/share/man/man1/yarn.1.gz
-	# Ubuntu uses gnupg2 by default so 'gpg' is acuallu gpg2, this causes an
-	# issue with things like my .gitconfig which explicity references 'gpg2'
-	# command so symlink to make configs work without change.
-	ln -sf /usr/bin/gpg /usr/bin/gpg2
 }
 
 

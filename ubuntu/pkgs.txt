@@ -1,8 +1,11 @@
 arandr
 audacity
+bat
 build-essential
+buildah
 ccls
 clang
+cmake
 cmus
 curl
 cwm
@@ -10,6 +13,7 @@ dnsutils
 dunst
 easytag
 emacs
+exa
 fd-find
 feh
 firefox
@@ -25,6 +29,8 @@ inkscape
 jq
 lame
 libclang-dev
+libfontconfig1-dev
+libfreetype6-dev
 libgif-dev
 libgit2-dev
 libgnutls28-dev
@@ -36,6 +42,7 @@ libreoffice
 libtiff-dev
 libx11-xcb-dev
 libxcb-randr0-dev
+libxcb-xfixes0-dev
 libxcb-xinerama0-dev
 libxml2-dev
 llvm
@@ -45,7 +52,7 @@ ncat
 neofetch
 nodejs
 npm
-openjdk-14-jdk-headless
+openjdk-15-jdk-headless
 opus-tools
 pandoc
 pass
@@ -53,11 +60,15 @@ pavucontrol
 pciutils
 pcscd
 pinentry-curses
+pkg-config
+podman
 pulseaudio
 pwgen
 python3
+python3
 python3-gpg
 python3-pip
+ripgrep
 rofi
 rxvt-unicode-256color
 scdaemon
@@ -70,7 +81,6 @@ suckless-tools
 sxiv
 texlive
 texlive-xetex
-thunar
 tmux
 ttf-bitstream-vera
 ttf-dejavu

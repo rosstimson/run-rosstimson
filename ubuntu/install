@@ -2,7 +2,6 @@
 
 set -e
 
-ALACRITTY_VERSION="v0.6.0"
 CLOJURE_LSP_VERSION="release-20201009T224414"
 SLACK_VERSION="4.11.3"
 TERRAFORM_VERSION="0.13.5"
@@ -20,7 +19,6 @@ main() {
 	manual_installs
 	dotfiles
 	gpg
-	passwords
 	fonts
 	wallpaper
 	disable_default_ssh_agent
@@ -61,12 +59,25 @@ correct_names() {
 # Installs things that are either unavailable or really outdated in the Debian repos.
 manual_installs() {
 	# Alacritty (https://github.com/alacritty/alacritty)
-	# A cross-platform, GPU-accelerated terminal emulator written in Rust
-	if [ ! -x /usr/bin/alacritty ]; then
-		cd /tmp \
-			&& wget https://github.com/alacritty/alacritty/releases/download/${ALACRITTY_VERSION}/Alacritty-${ALACRITTY_VERSION}-ubuntu_18_04_amd64.deb \
-			&& apt install -y ./Alacritty-${ALACRITTY_VERSION}-ubuntu_18_04_amd64.deb \
-			&& rm Alacritty-${ALACRITTY_VERSION}-ubuntu_18_04_amd64.deb
+	# A cross-platform, GPU-accelerated terminal emulator
+	if [ ! -x /usr/local/bin/alacritty ]; then
+		# Only fetch the src tarball if src code is not already present
+		if [ ! -d "/home/rosstimson/src/alacritty" ]; then
+			cd /home/rosstimson/src \
+				&& git clone https://github.com/alacritty/alacritty.git \
+				&& chown -R rosstimson:rosstimson alacritty
+		fi
+		cd /home/rosstimson/src/alacritty/ \
+		   su -l rosstimson -c 'export PATH="/home/rosstimson/.cargo/bin:$PATH" \
+		   	  && cargo build --release' \
+			&& infocmp alacritty \
+			&& tic -xe alacritty,alacritty-direct extra/alacritty.info \
+			&& cp target/release/alacritty /usr/local/bin \
+			&& cp extra/logo/alacritty-term.svg /usr/share/pixmaps/Alacritty.svg \
+			&& desktop-file-install extra/linux/Alacritty.desktop \
+			&& update-desktop-database \
+			&& mkdir -p /usr/local/share/man/man1 \
+			&& gzip -c extra/alacritty.man | tee /usr/local/share/man/man1/alacritty.1.gz > /dev/null
 	fi
 
 
@@ -78,6 +89,7 @@ manual_installs() {
 			&& mv terraform /usr/local/bin \
 			&& rm terraform_${TERRAFORM_VERSION}_linux_amd64.zip
 	fi
+
 
 	# AWS CLI v2
 	if [ ! -x /usr/local/bin/aws ]; then
@@ -101,6 +113,7 @@ manual_installs() {
 		# Compile and install.
 		cd /home/rosstimson/src/bar && make && PREFIX=/usr/local make install
 	fi
+
 
 	# Xbanish like unclutter, removes cursor in Xorg when not in use or when typing.
 	# If the executable is not already installed then compile and install.
@@ -133,6 +146,7 @@ manual_installs() {
 			&& rm slack-desktop-${SLACK_VERSION}-amd64.deb
 	fi
 
+
 	# Zoom
 	if [ ! -x /usr/bin/zoom ]; then
 		cd /tmp \
@@ -148,6 +162,15 @@ manual_installs() {
 			&& echo "deb [arch=amd64] https://updates.signal.org/desktop/apt xenial main" | tee -a /etc/apt/sources.list.d/signal-xenial.list \
 			&& apt update \
 			&& apt install -y signal-desktop
+	fi
+
+
+	# 1Password
+	if [ ! -x /usr/bin/1password ]; then
+		apt-key --keyring /usr/share/keyrings/1password.gpg adv --keyserver keyserver.ubuntu.com --recv-keys 3FEF9748469ADBE15DA7CA80AC2D62742012EA22 \
+			&& echo 'deb [arch=amd64 signed-by=/usr/share/keyrings/1password.gpg] https://downloads.1password.com/linux/debian edge main' | tee /etc/apt/sources.list.d/1password.list \
+			&& apt update \
+			&& apt install -y 1password
 	fi
 
 
@@ -169,40 +192,11 @@ manual_installs() {
 
 
 	# Modern utilities written in Rust
-	# Ripgrep (https://github.com/BurntSushi/ripgrep): 'grep' replacement
-	if [ ! -x /home/rosstimson/.cargo/bin/rg ]; then
-		su -l rosstimson -c 'export PATH="/home/rosstimson/.cargo/bin:$PATH" \
-			&& cargo install ripgrep'
-	fi
 
 	# Bottom (https://github.com/ClementTsang/bottom): 'top' replacement
 	if [ ! -x /home/rosstimson/.cargo/bin/btm ]; then
 		su -l rosstimson -c 'export PATH="/home/rosstimson/.cargo/bin:$PATH" \
 			&& cargo install bottom'
-	fi
-
-	# Procs (https://github.com/dalance/procs): 'ps' replacement
-	if [ ! -x /home/rosstimson/.cargo/bin/procs ]; then
-		su -l rosstimson -c 'export PATH="/home/rosstimson/.cargo/bin:$PATH" \
-			&& cargo install procs'
-	fi
-
-	# Skim (https://github.com/lotabout/skim): Fuzzy finder similar to FZF
-	if [ ! -x /home/rosstimson/.cargo/bin/sk ]; then
-		su -l rosstimson -c 'export PATH="/home/rosstimson/.cargo/bin:$PATH" \
-			&& cargo install skim'
-	fi
-
-	# Exa (https://github.com/ogham/exa): 'ls' replacement
-	if [ ! -x /home/rosstimson/.cargo/bin/exa ]; then
-		su -l rosstimson -c 'export PATH="/home/rosstimson/.cargo/bin:$PATH" \
-			&& cargo install exa'
-	fi
-
-	# Bat (https://github.com/sharkdp/bat): 'cat' replacement
-	if [ ! -x /home/rosstimson/.cargo/bin/bat ]; then
-		su -l rosstimson -c 'export PATH="/home/rosstimson/.cargo/bin:$PATH" \
-			&& cargo install --locked bat'
 	fi
 
 	# Dust (https://github.com/bootandy/dust): 'du' replacement
@@ -223,16 +217,34 @@ manual_installs() {
 			&& cargo install licensor'
 	fi
 
-	# Tokei (https://github.com/XAMPPRocky/tokei): Count your code quickly
-	if [ ! -x /home/rosstimson/.cargo/bin/tokei ]; then
+	# Procs (https://github.com/dalance/procs): 'ps' replacement
+	if [ ! -x /home/rosstimson/.cargo/bin/procs ]; then
 		su -l rosstimson -c 'export PATH="/home/rosstimson/.cargo/bin:$PATH" \
-			&& cargo install tokei'
+			&& cargo install procs'
 	fi
 
 	# Sd (https://github.com/chmln/sd): 'sed' replacement
 	if [ ! -x /home/rosstimson/.cargo/bin/sd ]; then
 		su -l rosstimson -c 'export PATH="/home/rosstimson/.cargo/bin:$PATH" \
 			&& cargo install sd'
+	fi
+
+	# Skim (https://github.com/lotabout/skim): Fuzzy finder similar to FZF
+	if [ ! -x /home/rosstimson/.cargo/bin/sk ]; then
+		su -l rosstimson -c 'export PATH="/home/rosstimson/.cargo/bin:$PATH" \
+			&& cargo install skim'
+	fi
+
+	# Starship (https://github.com/ajeetdsouza/zoxide): Cross-shell prompt
+	if [ ! -x /home/rosstimson/.cargo/bin/starship ]; then
+		su -l rosstimson -c 'export PATH="/home/rosstimson/.cargo/bin:$PATH" \
+			&& cargo install starship'
+	fi
+
+	# Tokei (https://github.com/XAMPPRocky/tokei): Count your code quickly
+	if [ ! -x /home/rosstimson/.cargo/bin/tokei ]; then
+		su -l rosstimson -c 'export PATH="/home/rosstimson/.cargo/bin:$PATH" \
+			&& cargo install tokei'
 	fi
 
 	# Zoxide (https://github.com/ajeetdsouza/zoxide): Jump to commonly used dirs quickly
@@ -319,16 +331,6 @@ gpg() {
 
 	# Import my public key if it is not already present.
 	su -l rosstimson -c 'gpg --keyserver pool.sks-keyservers.net --recv-keys 0x667A3481E4BB34F3'
-}
-
-
-# Get password store (GPG encrypted and in a private Github repo)
-passwords() {
-	# Clone passwords from Github if the directory is not present.
-	if [ ! -d '/home/rosstimson/.password-store' ]
-	then
-		su --pty -l rosstimson -c 'git clone git@github.com:rosstimson/pwstore.git /home/rosstimson/.password-store'
-	fi
 }
 
 

@@ -18,6 +18,7 @@ fd-find
 feh
 firefox
 flac
+fonts-dejavu
 fonts-font-awesome
 fonts-roboto
 fvwm
@@ -83,7 +84,6 @@ texlive
 texlive-xetex
 tmux
 ttf-bitstream-vera
-ttf-dejavu
 ufw
 unzip
 vim

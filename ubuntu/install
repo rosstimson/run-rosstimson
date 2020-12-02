@@ -350,7 +350,7 @@ dev() {
 	fi
 
 	# sscache - Shared compilation cache that can use cloud storage (https://github.com/mozilla/sccache)
-	if [ ! -x /home/rosstimson/.cargo/bin/sscache ]; then
+	if [ ! -x /home/rosstimson/.cargo/bin/sccache ]; then
 		su -l rosstimson -c 'export PATH="/home/rosstimson/.cargo/bin:$PATH" \
 			&& cargo install sccache'
 	fi

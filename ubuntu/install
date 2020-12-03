@@ -231,7 +231,7 @@ manual_installs() {
 			&& cargo install skim'
 	fi
 
-	# Starship (https://github.com/ajeetdsouza/zoxide): Cross-shell prompt
+	# Starship (https://starship.rs): Cross-shell prompt
 	if [ ! -x /home/rosstimson/.cargo/bin/starship ]; then
 		su -l rosstimson -c 'export PATH="/home/rosstimson/.cargo/bin:$PATH" \
 			&& cargo install starship'
@@ -316,15 +316,6 @@ gpg() {
 	# Ensure my ~/.gnupg dir has the correct permissions otherwise it will error.
 	chmod 700 /home/rosstimson/.gnupg
 
-	# From 'man 1 scdaemon':
-	# --pcsc-driver library Use library to access the smartcard reader.
-	# The current default is ‘libpcsclite.so’.	Instead of using this
-	# option you might also want to install a symbolic link to the
-	# default file name (e.g. from ‘libpcsclite.so.1’).
-	#
-	# Without this symlink GPG keys on Yubikey will not work.
-	ln -sf /usr/lib/x86_64-linux-gnu/libpcsclite.so.1 /usr/lib/x86_64-linux-gnu/libpcsclite.so
-
 	# Import my public key if it is not already present.
 	su -l rosstimson -c 'gpg --keyserver pool.sks-keyservers.net --recv-keys 0x667A3481E4BB34F3'
 }
@@ -349,7 +340,7 @@ dev() {
 			&& rustup component add rust-src'
 	fi
 
-	# sscache - Shared compilation cache that can use cloud storage (https://github.com/mozilla/sccache)
+	# sccache - Shared compilation cache that can use cloud storage (https://github.com/mozilla/sccache)
 	if [ ! -x /home/rosstimson/.cargo/bin/sccache ]; then
 		su -l rosstimson -c 'export PATH="/home/rosstimson/.cargo/bin:$PATH" \
 			&& cargo install sccache'

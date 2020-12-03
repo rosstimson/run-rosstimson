@@ -10,7 +10,6 @@ cmus
 curl
 cwm
 dnsutils
-dunst
 easytag
 emacs
 exa

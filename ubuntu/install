@@ -41,6 +41,8 @@ packages() {
 
 # Debian obnoxiously renames loadsa shit, symlink to their proper names.
 correct_names() {
+	ln -sf /usr/bin/batcat /usr/bin/bat
+	ln -sf /usr/share/man/man1/batcat.1.gz /usr/share/man/man1/bat.1.gz
 	ln -sf /usr/bin/openbsd-cwm /usr/bin/cwm
 	ln -sf /usr/share/man/man1/openbsd-cwm.1.gz /usr/share/man/man1/cwm.1.gz
 	ln -sf /usr/bin/signify-openbsd /usr/bin/signify

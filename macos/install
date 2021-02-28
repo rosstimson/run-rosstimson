@@ -1,0 +1,75 @@
+#!/bin/sh
+
+set -e
+
+
+main() {
+	directories
+	packages
+	config_sudo
+	dotfiles
+	gpg
+}
+
+# Install packages.
+packages() {
+	# Refresh package index first.
+	brew update
+
+	# Install from list of packages in a text file.
+	cd /tmp \
+	   && wget https://ross.run/macos/pkgs.txt \
+	   && < ./pkgs.txt xargs brew install \
+	   && rm ./pkgs.txt
+}
+
+
+hunspell_dictonaries() {
+	curl -Ss https://cgit.freedesktop.org/libreoffice/dictionaries/tree/en/en_GB.aff -o ~/Library/Spelling/en_GB.aff
+	curl -Ss https://cgit.freedesktop.org/libreoffice/dictionaries/tree/en/en_GB.dic -o ~/Library/Spelling/en_GB.dic
+}
+
+# Configure my user for sudo without a password
+config_sudo() {
+	cat <<- EOF | sudo tee /etc/sudoers.d/rosstimson
+		rosstimson	 ALL=(ALL) NOPASSWD:ALL
+	EOF
+}
+
+
+# Create directories I normally have.
+directories() {
+	su -l rosstimson -c 'mkdir -p /home/rosstimson/{org,sites,src,sync}'
+	su -l rosstimson -c 'mkdir -p /home/rosstimson/Pictures/{screenshots,wallpapers}'
+	su -l rosstimson -c 'mkdir -p /home/rosstimson/code/{clojure,go,python,rust,shell,terraform,javascript}'
+}
+
+
+dotfiles() {
+	# Add Github to known hosts.  Ensure the known_hosts file exists first of all.
+	su -l rosstimson -c 'touch /home/rosstimson/.ssh/known_hosts'
+
+	echo 'github.com,140.82.118.3 ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAq2A7hRGmdnm9tUDbO9IDSwBK6TbQa+PXYPCPy6rbTrTtw7PHkccKrpp0yVhp5HdEIcKr6pLlVDBfOLX9QUsyCOV0wzfjIJNlGEYsdlLJizHhbn2mUjvSAHQqZETYP81eFzLQNnPHt4EVVUh7VfDESU84KezmD5QlWpXLmvU31/yMf+Se8xhHTvKSCZIFImWwoG6mbUoWf9nzpIoaSjB+weqqUUmpaaasXVal72J+UX2B+2RPW3RcT0eOzQgqlJL3RKrTJvdsjE3JEAvGq3lGHSZXy28G3skua2SmVi/w4yCE6gbODqnTWlg7+wC604ydGXA8VJiS5ap43JXiUFFAaQ==' >> /home/rosstimson/.ssh/known_hosts
+
+	# Clone dotfiles from Github if the directory is not present.
+	if [ ! -d '/home/rosstimson/code/dotfiles' ]
+	then
+		su --pty -l rosstimson -c 'git clone git@github.com:rosstimson/dotfiles.git /home/rosstimson/code/dotfiles'
+	fi
+	# Install dotfiles.
+	su -l rosstimson -c 'cd /home/rosstimson/code/dotfiles && make'
+}
+
+
+# Do this after dotfiles as dotfiles includes GPG config.
+gpg() {
+	# Ensure my ~/.gnupg dir has the correct permissions otherwise it will error.
+	chmod 700 /home/rosstimson/.gnupg
+
+	# Import my public key if it is not already present.
+	su -l rosstimson -c 'gpg --keyserver pool.sks-keyservers.net --recv-keys 0x667A3481E4BB34F3'
+}
+
+
+# GO!!!  Provision this bad lad.
+main

@@ -1,0 +1,62 @@
+tap "homebrew/bundle"
+tap "homebrew/cask"
+tap "homebrew/cask-fonts"
+tap "homebrew/core"
+
+brew "awscli"
+brew "bat"
+brew "clojure-lsp"
+brew "deno"
+brew "exa"
+brew "fd"
+brew "go"
+brew "gopls"
+brew "hunspell"
+brew "just"
+brew "leiningen"
+brew "make"
+brew "mas"
+brew "mg"
+brew "nodejs"
+brew "python"
+brew "ripgrep"
+brew "rust-analyzer"
+brew "rustup-init"
+brew "shellcheck"
+brew "signify-osx"
+brew "starship"
+brew "tmux"
+brew "wget"
+brew "yarn"
+brew "zoxide"
+
+cask "adoptopenjdk"
+cask "alfred"
+cask "emacs"
+cask "firefox"
+cask "font-victor-mono-nerd-font"
+cask "gpg-suite"
+cask "iterm2"
+cask "signal"
+cask "spotify"
+
+mas "1Password 7", id: 1333542190
+mas "Amphetamine", id: 937984704
+mas "Bear", id: 1091189122
+mas "Day One", id: 1055511498
+mas "Deliveries", id: 290986013
+mas "Kaleidoscope", id: 587512244
+mas "Keynote", id: 409183694
+mas "Magnet", id: 441258766
+mas "Marked 2", id: 890031187
+mas "MiniPlay", id: 936243210
+mas "Numbers", id: 409203825
+mas "Pages", id: 409201541
+mas "Pixelmator Pro", id: 1289583905
+mas "Poolside FM", id: 1514817810
+mas "Raindrop.io for Safari", id: 957810159
+mas "Reeder 5", id: 1529448980
+mas "Things 3", id: 904280696
+mas "Twitter", id: 1482454543
+mas "Vimari", id: 1480933944
+mas "Xcode", id: 497799835

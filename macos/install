@@ -1,0 +1,124 @@
+#!/bin/sh
+
+set -e
+
+main() {
+	install_homebrew
+	brew_up
+	config_sudo
+	fix_tilde_key
+	fix_zsh
+	hunspell_dictionaries
+	directories
+	dotfiles
+	gpg_config_and_keys
+	dev
+}
+
+
+install_homebrew() {
+	if [ ! -x /usr/local/bin/brew ]; then
+		/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+	fi
+}
+
+
+# Install packages and apps with Homebrew
+brew_up() {
+	cd /tmp \
+		&& curl -SsO https://ross.run/macos/Brewfile \
+		&& brew bundle --file /tmp/Brewfile
+}
+
+
+# Configure my user for sudo without a password
+config_sudo() {
+	cat <<- EOF | sudo tee /etc/sudoers.d/rosstimson
+		rosstimson	 ALL=(ALL) NOPASSWD:ALL
+	EOF
+}
+
+
+# Don't like the way the tilde key is bottom left on UK model MacBooks
+# so remap it to top left where it usually lives.
+#
+# There is no easy way to do this in System Prefs or somewhere like
+# that so fix is from here:
+# https://bezdelev.com/hacking/fix-tilde-key-mac/
+fix_tilde_key() {
+	hidutil property --set '{"UserKeyMapping": [{"HIDKeyboardModifierMappingSrc": 0x700000064, "HIDKeyboardModifierMappingDst": 0x700000035}, {"HIDKeyboardModifierMappingSrc": 0x700000035, "HIDKeyboardModifierMappingDst": 0x700000064}]}'
+}
+
+
+# Because of the way Homebrew makes your user the owner of stuff in
+# /usr/local zsh will complain about permissions with an error like:
+#
+# zsh compinit: insecure directories, run compaudit for list.
+# Ignore insecure directories and continue [y] or abort compinit [n]? ncompinit: initialization aborted
+#
+# To fix the error you remove write permissions for the group.
+fix_zsh() {
+	sudo chmod -R 755 /usr/local/share/zsh
+	sudo chown -R $(whoami):admin /usr/local/share/zsh
+}
+
+
+hunspell_dictionaries() {
+	cd ~/Library/Spelling/ \
+	   && curl -SsO https://cgit.freedesktop.org/libreoffice/dictionaries/tree/en/en_GB.aff \
+	   && curl -SsO https://cgit.freedesktop.org/libreoffice/dictionaries/tree/en/en_GB.dic
+}
+
+
+# Create directories I normally have.
+directories() {
+	mkdir -p ~/{org,sites,src,sync}
+	mkdir -p ~/Pictures/{screenshots,wallpapers}
+	mkdir -p ~/code/{clojure,go,python,rust,shell,terraform,javascript}
+}
+
+
+dotfiles() {
+	# Add Github to known hosts.  Ensure the known_hosts file exists first of all.
+	touch ~/.ssh/known_hosts
+
+	if ! grep -Fq 'github.com' ~/.ssh/known_hosts; then
+	   echo 'github.com,140.82.121.4 ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAq2A7hRGmdnm9tUDbO9IDSwBK6TbQa+PXYPCPy6rbTrTtw7PHkccKrpp0yVhp5HdEIcKr6pLlVDBfOLX9QUsyCOV0wzfjIJNlGEYsdlLJizHhbn2mUjvSAHQqZETYP81eFzLQNnPHt4EVVUh7VfDESU84KezmD5QlWpXLmvU31/yMf+Se8xhHTvKSCZIFImWwoG6mbUoWf9nzpIoaSjB+weqqUUmpaaasXVal72J+UX2B+2RPW3RcT0eOzQgqlJL3RKrTJvdsjE3JEAvGq3lGHSZXy28G3skua2SmVi/w4yCE6gbODqnTWlg7+wC604ydGXA8VJiS5ap43JXiUFFAaQ==' >> ~/.ssh/known_hosts
+	fi
+
+	# Clone dotfiles from Github if the directory is not present.
+	# Just assume that if alreayd cloned that dotfiles have already been installed.
+	if [ ! -d ~/code/dotfiles ]
+	then
+		git clone git@github.com:rosstimson/dotfiles.git ~/code/dotfiles
+		# Install dotfiles
+		cd ~/code/dotfiles && gmake
+	fi
+}
+
+
+# Do this after dotfiles as dotfiles includes GPG config.
+gpg_config_and_keys() {
+	# Ensure my ~/.gnupg dir has the correct permissions otherwise it will error.
+	chmod 700 ~/.gnupg
+
+	# Import my public key if it is not already present.
+	gpg --keyserver pool.sks-keyservers.net --recv-keys 0x667A3481E4BB34F3
+
+	# Emacs fails to install some things cos a GPG ELPA Signing key is
+	# missing, get the following key to fix:
+	gpg --keyserver pool.sks-keyservers.net --recv-keys 0x066DAFCB81E42C40
+}
+
+
+dev() {
+	# Install some essential Python tools
+	pip3 install --user -U pipx poetry proselint python-language-server pyls-black pre-commit
+
+	# Install some JavaScript essential tools
+	yarn global add eslint typescript-language-server typescript
+}
+
+
+# GO!!!  Provision this bad lad.
+main

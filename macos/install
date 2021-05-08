@@ -6,10 +6,11 @@ main() {
 	install_homebrew
 	brew_up
 	config_sudo
+	directories
 	fix_tilde_key
+	emacs_service
 	fix_zsh
 	hunspell_dictionaries
-	directories
 	dotfiles
 	gpg_config_and_keys
 	dev
@@ -105,6 +106,9 @@ directories() {
 	mkdir -p ~/{org,sites,src,sync}
 	mkdir -p ~/Pictures/{screenshots,wallpapers}
 	mkdir -p ~/code/{clojure,go,python,rust,shell,terraform,javascript}
+
+	# The dir for user services/daemons, it doesn't exist by default.
+	mkdir -p ~/Library/LaunchAgents
 }
 
 

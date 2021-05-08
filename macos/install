@@ -45,8 +45,38 @@ config_sudo() {
 # There is no easy way to do this in System Prefs or somewhere like
 # that so fix is from here:
 # https://bezdelev.com/hacking/fix-tilde-key-mac/
+#
+# However, using the hidutil command works only for the current
+# session and the key will reset back to old location upon reboot,
+# create a launchd service that runs the command at system boot to
+# persist the change.
 fix_tilde_key() {
-	hidutil property --set '{"UserKeyMapping": [{"HIDKeyboardModifierMappingSrc": 0x700000064, "HIDKeyboardModifierMappingDst": 0x700000035}, {"HIDKeyboardModifierMappingSrc": 0x700000035, "HIDKeyboardModifierMappingDst": 0x700000064}]}'
+	cat <<- EOF | tee ~/Library/LaunchAgents/local.remap-tilde.plist
+		<?xml version="1.0" encoding="UTF-8"?>
+		<!DOCTYPE plist PUBLIC -//Apple Computer//DTD PLIST 1.0//EN http://www.apple.com/DTDs/PropertyList-1.0.dtd >
+		<plist version="1.0">
+		<dict>
+			<key>Label</key>
+			<string>local.remap-tilde</string>
+			<key>ProgramArguments</key>
+			<array>
+				<string>/usr/bin/hidutil</string>
+				<string>property</string>
+				<string>--set</string>
+				<string>{"UserKeyMapping": [{"HIDKeyboardModifierMappingSrc": 0x700000064, "HIDKeyboardModifierMappingDst": 0x700000035}, {"HIDKeyboardModifierMappingSrc": 0x700000035, "HIDKeyboardModifierMappingDst": 0x700000064}]}</string>
+			</array>
+			<key>RunAtLoad</key>
+			<true/>
+			<key>KeepAlive</key>
+			<false/>
+			<key>AbandonProcessGroup</key>
+			<true/>
+		</dict>
+		</plist>
+	EOF
+}
+
+
 }
 
 

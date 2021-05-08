@@ -18,7 +18,7 @@ main() {
 	dev
 	manual_installs
 	dotfiles
-	gpg
+	gpg_config_and_keys
 	fonts
 	wallpaper
 	disable_default_ssh_agent
@@ -294,7 +294,9 @@ dotfiles() {
 	# Add Github to known hosts.  Ensure the known_hosts file exists first of all.
 	su -l rosstimson -c 'touch /home/rosstimson/.ssh/known_hosts'
 
-	echo 'github.com,140.82.118.3 ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAq2A7hRGmdnm9tUDbO9IDSwBK6TbQa+PXYPCPy6rbTrTtw7PHkccKrpp0yVhp5HdEIcKr6pLlVDBfOLX9QUsyCOV0wzfjIJNlGEYsdlLJizHhbn2mUjvSAHQqZETYP81eFzLQNnPHt4EVVUh7VfDESU84KezmD5QlWpXLmvU31/yMf+Se8xhHTvKSCZIFImWwoG6mbUoWf9nzpIoaSjB+weqqUUmpaaasXVal72J+UX2B+2RPW3RcT0eOzQgqlJL3RKrTJvdsjE3JEAvGq3lGHSZXy28G3skua2SmVi/w4yCE6gbODqnTWlg7+wC604ydGXA8VJiS5ap43JXiUFFAaQ==' >> /home/rosstimson/.ssh/known_hosts
+	if ! grep -Fq 'github.com' ~/.ssh/known_hosts; then
+		echo 'github.com,140.82.121.3,140.82.121.4 ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAq2A7hRGmdnm9tUDbO9IDSwBK6TbQa+PXYPCPy6rbTrTtw7PHkccKrpp0yVhp5HdEIcKr6pLlVDBfOLX9QUsyCOV0wzfjIJNlGEYsdlLJizHhbn2mUjvSAHQqZETYP81eFzLQNnPHt4EVVUh7VfDESU84KezmD5QlWpXLmvU31/yMf+Se8xhHTvKSCZIFImWwoG6mbUoWf9nzpIoaSjB+weqqUUmpaaasXVal72J+UX2B+2RPW3RcT0eOzQgqlJL3RKrTJvdsjE3JEAvGq3lGHSZXy28G3skua2SmVi/w4yCE6gbODqnTWlg7+wC604ydGXA8VJiS5ap43JXiUFFAaQ==' >> ~/.ssh/known_hosts
+	fi
 
 	# Clone dotfiles from Github if the directory is not present.
 	if [ ! -d '/home/rosstimson/code/dotfiles' ]
@@ -307,7 +309,7 @@ dotfiles() {
 
 
 # Do this after dotfiles as dotfiles includes GPG config.
-gpg() {
+gpg_config_and_keys() {
 	# NOTE: For GPG on Yubikey to work the following packages need to be installed:
 	# gnupg pcscd scdaemon
 	#

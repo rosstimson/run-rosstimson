@@ -47,7 +47,9 @@ brew "yarn"
 brew "zoxide"
 
 cask "adoptopenjdk"
+cask "alacritty"
 cask "alfred"
+cask "bettertouchtool"
 cask "blue-sherpa"
 cask "dash"
 cask "emacs"
@@ -69,6 +71,7 @@ mas "Amphetamine", id: 937984704
 mas "Bear", id: 1091189122
 mas "Day One", id: 1055511498
 mas "Deliveries", id: 290986013
+mas "DuckDuckGo Privacy Essentials", id: 1482920575
 mas "Kaleidoscope", id: 587512244
 mas "Keynote", id: 409183694
 mas "Magnet", id: 441258766
@@ -77,10 +80,11 @@ mas "Numbers", id: 409203825
 mas "Pages", id: 409201541
 mas "Pixelmator Pro", id: 1289583905
 mas "Poolside FM", id: 1514817810
-mas "Raindrop.io for Safari", id: 957810159
+mas "Save to Raindrop.io", id: 1549370672
 mas "Reeder 5", id: 1529448980
 mas "Silicio", id: 933627574
 mas "Things 3", id: 904280696
+mas "Toast for Safari", id: 1465707487
 mas "Twitter", id: 1482454543
 mas "Vimari", id: 1480933944
 mas "Xcode", id: 497799835

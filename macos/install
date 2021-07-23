@@ -7,6 +7,7 @@ main() {
 	brew_up
 	config_sudo
 	directories
+	symlink_homebrew_for_arm64_machines
 	fix_tilde_key
 	emacs_service
 	fix_zsh
@@ -130,6 +131,21 @@ directories() {
 
 	# The dir for user services/daemons, it doesn't exist by default.
 	mkdir -p ~/Library/LaunchAgents
+}
+
+
+# On Apple Silicon (M1) Macs Homebrew does not install into /usr/local
+# and therefore things like building mu4e fail as it cannot spy things
+# like xapian.h when trying to build.  By putting these symlinks in it
+# allows things to work similar to other machines without loads of
+# extra change.
+symlink_homebrew_for_arm64_machines() {
+	if [ "$(uname -m)" = "arm64" ] ; then
+		sudo ln -sf /opt/homebrew/include /usr/local
+		sudo mkdir -p /usr/local/share/emacs/site-lisp
+		sudo ln -sf /opt/homebrew/share/emacs/site-lisp/mu/mu4e \
+			 /usr/local/share/emacs/site-lisp/mu4e
+	fi
 }
 
 

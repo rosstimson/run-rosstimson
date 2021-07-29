@@ -42,10 +42,12 @@ brew "rust-analyzer"
 brew "rustup-init"
 brew "shellcheck"
 brew "signify-osx"
+brew "sk"
 brew "starship"
 brew "terraform"
 brew "terraform-ls"
 brew "tmux"
+brew "weechat"
 brew "wget"
 brew "yarn"
 brew "zoxide"
@@ -68,6 +70,7 @@ cask "pgadmin4"
 cask "postgres-unofficial"
 cask "signal"
 cask "spotify"
+cask "steam"
 cask "thingsmacsandboxhelper"
 cask "visual-studio-code"
 
@@ -86,6 +89,7 @@ mas "Pages", id: 409201541
 mas "Pixelmator Pro", id: 1289583905
 mas "Poolside FM", id: 1514817810
 mas "Reeder 5", id: 1529448980
+mas "Save to Pocket", id: 1477385213
 mas "Save to Raindrop.io", id: 1549370672
 mas "Silicio", id: 933627574
 mas "Things 3", id: 904280696

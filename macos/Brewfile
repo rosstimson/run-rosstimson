@@ -76,6 +76,7 @@ cask "signal"
 cask "spotify"
 cask "steam"
 cask "thingsmacsandboxhelper"
+cask "transmission"
 cask "visual-studio-code"
 
 mas "1Password 7", id: 1333542190

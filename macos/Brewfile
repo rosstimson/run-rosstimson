@@ -6,6 +6,7 @@ tap "homebrew/core"
 
 tap "borkdude/brew"
 
+brew "age"
 brew "aspell"
 brew "automake"
 brew "awscli"
@@ -89,7 +90,7 @@ mas "Bear", id: 1091189122
 mas "Day One", id: 1055511498
 mas "Deliveries", id: 290986013
 mas "DuckDuckGo Privacy Essentials", id: 1482920575
-mas "Kaleidoscope", id: 587512244
+mas "Kaleidoscope", id: 1575557335
 mas "Keynote", id: 409183694
 mas "Magnet", id: 441258766
 mas "Marked 2", id: 890031187

@@ -2,22 +2,28 @@
   "entries": {
     "tap": {
       "homebrew/bundle": {
-        "revision": "5381c8228d295d95cad1deda93b6bafa3891cc1c"
+        "revision": "92cfb59945e1a229d67e7c79d9c6eab93ae58525"
       },
       "homebrew/cask": {
-        "revision": "264064b2f4f8dea988e4fb6c895dc902a5a13d75"
+        "revision": "02e6daec5003f2a22e922ff4c51a9460430cfd2d"
       },
       "homebrew/cask-drivers": {
-        "revision": "37dec820915a5cb9c3ee37dffc04036e73a8acae"
+        "revision": "d177e25f783445b66aa7a32c5fd0b1095a73a4a8"
       },
       "homebrew/cask-fonts": {
         "revision": "2298f7061cb3730c9f5d754b6e0c6bdcf891688c"
       },
       "homebrew/core": {
-        "revision": "6e4aab0dbab957f1bd850d0b7af6fe66a72b2fc0"
+        "revision": "7c4d5fec4b3bddc5eb811e9b3ea7e2c2825a9ad6"
       },
       "borkdude/brew": {
         "revision": "c161da85d477e7b203350c1bb41e985cc4dded40"
+      },
+      "pulumi/tap": {
+        "revision": "9c62cd9577b873a3225d8d9f7c71a8000ab25656"
+      },
+      "dagger/tap": {
+        "revision": "e664d7bd1de5ea96be9baaf3d3d2b09a01dc7ca6"
       }
     },
     "brew": {
@@ -2166,6 +2172,14 @@
             }
           }
         }
+      },
+      "pulumi/tap/pulumi": {
+        "version": "3.32.1",
+        "bottle": false
+      },
+      "dagger/tap/dagger": {
+        "version": "0.2.10",
+        "bottle": false
       }
     },
     "cask": {
@@ -2188,7 +2202,7 @@
         }
       },
       "bettertouchtool": {
-        "version": "3.772,1913",
+        "version": "3.773,1914",
         "options": {
           "full_name": "bettertouchtool"
         }
@@ -2330,6 +2344,18 @@
         "options": {
           "full_name": "rectangle-pro"
         }
+      },
+      "docker": {
+        "version": "4.8.1,78998",
+        "options": {
+          "full_name": "docker"
+        }
+      },
+      "temurin": {
+        "version": "18.0.1,10",
+        "options": {
+          "full_name": "temurin"
+        }
       }
     },
     "mas": {
@@ -2425,9 +2451,9 @@
         "macOS": "11.5.2"
       },
       "monterey": {
-        "HOMEBREW_VERSION": "3.4.10-56-g5d61e69",
+        "HOMEBREW_VERSION": "3.4.10-70-g30e3d88",
         "HOMEBREW_PREFIX": "/usr/local",
-        "Homebrew/homebrew-core": "6e4aab0dbab957f1bd850d0b7af6fe66a72b2fc0",
+        "Homebrew/homebrew-core": "7c4d5fec4b3bddc5eb811e9b3ea7e2c2825a9ad6",
         "CLT": "13.3.1.0.1.1648687083",
         "Xcode": "13.3.1",
         "macOS": "12.3.1"

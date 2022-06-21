@@ -69,6 +69,8 @@ brew "weechat"
 brew "wget"
 brew "yarn"
 brew "zoxide"
+
+
 cask "1password"
 cask "1password-cli"
 cask "alacritty"
@@ -89,6 +91,7 @@ cask "little-snitch"
 cask "miniconda"
 cask "pgadmin4"
 cask "postgres-unofficial"
+cask "raindropio"
 cask "rectangle-pro"
 cask "signal"
 cask "spotify"
@@ -97,6 +100,7 @@ cask "temurin"
 cask "thingsmacsandboxhelper"
 cask "transmission"
 cask "visual-studio-code"
+
 
 mas "Amphetamine", id: 937984704
 mas "Bear", id: 1091189122

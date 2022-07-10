@@ -171,6 +171,9 @@ dotfiles() {
 		# Install dotfiles
 		cd ~/code/dotfiles && gmake
 	fi
+
+	# Bootstrap miniconda
+	conda init “$(basename “${SHELL}”)”
 }
 
 

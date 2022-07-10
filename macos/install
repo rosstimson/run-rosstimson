@@ -127,10 +127,16 @@ hunspell_dictionaries() {
 directories() {
 	mkdir -p ~/{org,sites,src,sync}
 	mkdir -p ~/Pictures/{screenshots,wallpapers}
-	mkdir -p ~/code/{clojure,go,python,rust,shell,terraform,javascript}
+	mkdir -p ~/code/{clojure,go,python,rust,shell,terraform,javascript,java}
 
 	# The dir for user services/daemons, it doesn't exist by default.
 	mkdir -p ~/Library/LaunchAgents
+
+	# Setup dir and symlink for using 1Password for SSH, see the docs
+	# linked below and confing in ~/.ssh/config.
+	# https://developer.1password.com/docs/ssh/get-started/#step-3-turn-on-the-1password-ssh-agent
+	mkdir -p ~/.1password && \
+		ln -s ~/Library/Group\ Containers/2BUA8C4S2C.com.1password/t/agent.sock ~/.1password/agent.sock
 }
 
 

@@ -8,7 +8,7 @@ main() {
 	config_sudo
 	directories
 	symlink_homebrew_for_arm64_machines
-	fix_tilde_key
+	#fix_tilde_key
 	emacs_service
 	fix_zsh
 	hunspell_dictionaries

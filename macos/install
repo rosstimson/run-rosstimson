@@ -81,25 +81,32 @@ fix_tilde_key() {
 
 # Use launchd to start Emacs as a service so I can quickly use it via emacsclient.
 emacs_service() {
-	cat <<- EOF | tee ~/Library/LaunchAgents/local.emacs.plist
-		<?xml version="1.0" encoding="UTF-8"?>
-		<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-		<plist version="1.0">
-			<dict>
-				<key>KeepAlive</key>
-				<true/>
-				<key>Label</key>
-				<string>local.emacs</string>
-				<key>ProgramArguments</key>
-				<array>
-					<string>/usr/local/bin/emacs/emacs</string>
-					<string>--fg-daemon</string>
-				</array>
-				<key>RunAtLoad</key>
-				<true/>
-				</dict>
-		</plist>
-	EOF
+  # When using the emacs-plus homebrew package it has an included way to easily
+  # run Emacs as a service.
+  brew services start d12frosted/emacs-plus/emacs-plus@28
+
+  # If not using the emacs-plus package from Homebrew you can configure launchd
+  # service like so:
+
+	# cat <<- EOF | tee ~/Library/LaunchAgents/local.emacs.plist
+	# 	<?xml version="1.0" encoding="UTF-8"?>
+	# 	<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+	# 	<plist version="1.0">
+	# 		<dict>
+	# 			<key>KeepAlive</key>
+	# 			<true/>
+	# 			<key>Label</key>
+	# 			<string>local.emacs</string>
+	# 			<key>ProgramArguments</key>
+	# 			<array>
+	# 				<string>/usr/local/bin/emacs/emacs</string>
+	# 				<string>--fg-daemon</string>
+	# 			</array>
+	# 			<key>RunAtLoad</key>
+	# 			<true/>
+	# 			</dict>
+	# 	</plist>
+	# EOF
 }
 
 

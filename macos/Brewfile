@@ -110,7 +110,6 @@ cask "visual-studio-code"
 
 mas "Amphetamine", id: 937984704
 mas "Bear", id: 1091189122
-mas "Carrot Weather", id: 993487541
 mas "Day One", id: 1055511498
 mas "Deliveries", id: 290986013
 mas "DuckDuckGo Privacy Essentials", id: 1482920575

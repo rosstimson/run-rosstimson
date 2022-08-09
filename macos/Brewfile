@@ -109,7 +109,6 @@ cask "transmission"
 cask "visual-studio-code"
 
 
-mas "Amphetamine", id: 937984704
 mas "Bear", id: 1091189122
 mas "Day One", id: 1055511498
 mas "Deliveries", id: 290986013
@@ -126,6 +125,7 @@ mas "Reeder 5", id: 1529448980
 mas "Save to Pocket", id: 1477385213
 mas "Save to Raindrop.io", id: 1549370672
 mas "Silicio", id: 933627574
+mas "Theine", id: 955848755
 mas "Things 3", id: 904280696
 mas "Transmit 5", id: 1436522307
 mas "Twitter", id: 1482454543

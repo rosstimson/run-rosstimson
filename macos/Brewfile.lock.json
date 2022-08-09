@@ -5,7 +5,7 @@
         "revision": "4756e4c4cf95485c5ea4da27375946c1dac2c71d"
       },
       "homebrew/cask": {
-        "revision": "f3e0c924d19c4ddd91bd6736acde8aa84acbba34"
+        "revision": "2e032c029387a9e9e7923f77cc644a5e331aa974"
       },
       "homebrew/cask-drivers": {
         "revision": "8c5ec89cb668b3d019c20efdf7a3fa994f921725"
@@ -14,7 +14,10 @@
         "revision": "385e32db668873c89960b2754187dca881c00c42"
       },
       "homebrew/core": {
-        "revision": "d619dc3a1cf19b7fb68c7af08a19024eb095bb44"
+        "revision": "b1936ed5ecc7abe9aeee62c9b9ee3e27e1ed88a5"
+      },
+      "homebrew/services": {
+        "revision": "b167b4279698e0bbf1a00a81bd9c209cbf9bab69"
       },
       "borkdude/brew": {
         "revision": "b9b0f77585fe7c7ee3d531196b3534838a4ebe9a"
@@ -2459,6 +2462,7 @@
         "id": "933627574",
         "version": "3.4.2"
       },
+      "Theine": null,
       "Things 3": null,
       "Transmit 5": null,
       "Twitter": {
@@ -2472,19 +2476,15 @@
       "Xcode": {
         "id": "497799835",
         "version": "13.4.1"
-      },
-      "Amphetamine": {
-        "id": "937984704",
-        "version": "5.2.2"
       }
     }
   },
   "system": {
     "macos": {
       "monterey": {
-        "HOMEBREW_VERSION": "3.5.8-22-gde6e848",
-        "HOMEBREW_PREFIX": "/opt/homebrew",
-        "Homebrew/homebrew-core": "d619dc3a1cf19b7fb68c7af08a19024eb095bb44",
+        "HOMEBREW_VERSION": "3.5.8-32-g044fefd",
+        "HOMEBREW_PREFIX": "/usr/local",
+        "Homebrew/homebrew-core": "b1936ed5ecc7abe9aeee62c9b9ee3e27e1ed88a5",
         "CLT": "13.4.0.0.1.1651278267",
         "Xcode": "13.4.1",
         "macOS": "12.5"

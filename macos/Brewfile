@@ -3,6 +3,7 @@ tap "homebrew/cask"
 tap "homebrew/cask-drivers"
 tap "homebrew/cask-fonts"
 tap "homebrew/core"
+tap "homebrew/services"
 
 tap "borkdude/brew"
 tap "choria-io/tap"

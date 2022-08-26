@@ -26,6 +26,7 @@ brew "clj-kondo"
 brew "clojure-lsp"
 brew "colima"
 brew "conftest"
+brew "coreutils"
 brew "dagger/tap/dagger"
 brew "delve"
 brew "deno"
@@ -114,10 +115,13 @@ cask "transmission"
 cask "visual-studio-code"
 
 
+
 mas "Bear", id: 1091189122
+mas "Cardhop", id: 1290358394
 mas "Day One", id: 1055511498
 mas "Deliveries", id: 290986013
 mas "DuckDuckGo Privacy Essentials", id: 1482920575
+mas "Fantastical", id: 975937182
 mas "Kaleidoscope", id: 1575557335
 mas "Keynote", id: 409183694
 mas "Marked 2", id: 890031187

@@ -116,6 +116,7 @@ cask "visual-studio-code"
 
 
 
+mas "1Password for Safari", id: 1569813296
 mas "Bear", id: 1091189122
 mas "Cardhop", id: 1290358394
 mas "Day One", id: 1055511498

@@ -6,12 +6,12 @@ tap "homebrew/core"
 tap "homebrew/services"
 
 tap "borkdude/brew"
+tap "buildpacks/tap"
 tap "choria-io/tap"
 tap "d12frosted/emacs-plus"
 tap "dagger/tap"
 tap "hashicorp/tap"
 tap "pulumi/tap"
-
 
 
 brew "age"
@@ -21,6 +21,7 @@ brew "awscli"
 brew "babashka"
 brew "bat"
 brew "boot-clj"
+brew "buildpacks/tap/pack"
 brew "choria-io/tap/appbuilder"
 brew "clj-kondo"
 brew "clojure-lsp"
@@ -81,7 +82,7 @@ brew "weechat"
 brew "wget"
 brew "yarn"
 brew "zoxide"
-
+brew "zstd"
 
 cask "1password"
 cask "1password-cli"

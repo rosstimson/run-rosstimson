@@ -171,12 +171,12 @@ dotfiles() {
 	fi
 
 	# Clone dotfiles from Github if the directory is not present.
-	# Just assume that if alreayd cloned that dotfiles have already been installed.
-	if [ ! -d ~/code/dotfiles ]
+	# Just assume that if already cloned that dotfiles have already been installed.
+	if [ ! -d ~/.dotfiles ]
 	then
-		git clone git@github.com:rosstimson/dotfiles.git ~/code/dotfiles
+		git clone git@github.com:rosstimson/dotfiles.git ~/.dotfiles
 		# Install dotfiles
-		cd ~/code/dotfiles && gmake
+		cd ~/.dotfiles && just install
 	fi
 }
 

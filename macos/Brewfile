@@ -105,6 +105,7 @@ cask "font-profont-nerd-font"
 cask "gpg-suite"
 cask "iterm2"
 cask "jetbrains-toolbox"
+cask "keepingyouawake"
 cask "ksdiff"
 cask "little-snitch"
 cask "miniconda"
@@ -141,7 +142,6 @@ mas "Reeder 5", id: 1529448980
 mas "Save to Pocket", id: 1477385213
 mas "Save to Raindrop.io", id: 1549370672
 mas "Silicio", id: 933627574
-mas "Theine", id: 955848755
 mas "Things 3", id: 904280696
 mas "Transmit 5", id: 1436522307
 mas "Twitter", id: 1482454543

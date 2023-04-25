@@ -86,9 +86,12 @@ brew "tokei"
 brew "topgrade"
 brew "weechat"
 brew "wget"
+brew "xh"
 brew "yarn"
 brew "zoxide"
 brew "zstd"
+
+
 
 cask "1password"
 cask "1password-cli"

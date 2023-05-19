@@ -35,6 +35,7 @@ brew "emacs-plus", args: ["with-elrumo1-icon", "with-native-comp"]
 brew "entr"
 brew "exa"
 brew "fd"
+brew "font-twilio-sans-mono"
 brew "gh"
 brew "git"
 brew "git-delta"

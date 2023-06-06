@@ -13,6 +13,7 @@ tap "hashicorp/tap"
 tap "pulumi/tap"
 
 
+
 brew "age"
 brew "aspell"
 brew "automake"
@@ -51,6 +52,7 @@ brew "isync"
 brew "jdtls"
 brew "jq"
 brew "just"
+brew "k9s"
 brew "kind"
 brew "kubectl"
 brew "kubectx"
@@ -80,6 +82,7 @@ brew "shellcheck"
 brew "signify-osx"
 brew "sk"
 brew "starship"
+brew "stern"
 brew "stow"
 brew "tealdeer"
 brew "terraform-ls"
@@ -92,7 +95,6 @@ brew "xh"
 brew "yarn"
 brew "zoxide"
 brew "zstd"
-
 
 
 cask "1password"

@@ -117,16 +117,12 @@ cask "jetbrains-toolbox"
 cask "keepingyouawake"
 cask "ksdiff"
 cask "little-snitch"
-cask "logseq"
 cask "pgadmin4"
 cask "postgres-unofficial"
 cask "raindropio"
 cask "raycast"
 cask "rectangle-pro"
 cask "signal"
-cask "spotify"
-cask "steam"
-cask "temurin"
 cask "thingsmacsandboxhelper"
 cask "transmission"
 cask "visual-studio-code"
@@ -134,10 +130,7 @@ cask "visual-studio-code"
 
 
 mas "1Password for Safari", id: 1569813296
-mas "Bear", id: 1091189122
 mas "Cardhop", id: 1290358394
-mas "Day One", id: 1055511498
-mas "Deliveries", id: 290986013
 mas "DuckDuckGo Privacy Essentials", id: 1482920575
 mas "Fantastical", id: 975937182
 mas "Kaleidoscope", id: 1575557335
@@ -146,18 +139,11 @@ mas "Marked 2", id: 890031187
 mas "Mela", id: 1568924476
 mas "Numbers", id: 409203825
 mas "Pages", id: 409201541
-mas "Paprika", id: 1303222628
 mas "Pixelmator Pro", id: 1289583905
-mas "Poolside FM", id: 1514817810
 mas "Readwise: Save to Reader", id: 1640236961
-mas "Reeder 5", id: 1529448980
-mas "Save to Pocket", id: 1477385213
 mas "Save to Raindrop.io", id: 1549370672
 mas "Silicio", id: 933627574
 mas "Things 3", id: 904280696
-mas "Transmit 5", id: 1436522307
-mas "Twitter", id: 1482454543
 mas "Unsplash", id: 1284863847
 mas "Vimari", id: 1480933944
 mas "Xcode", id: 497799835
-

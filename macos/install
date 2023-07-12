@@ -7,7 +7,6 @@ main() {
 	brew_up
 	config_sudo
 	directories
-	symlink_homebrew_for_arm64_machines
 	#fix_tilde_key
 	emacs_service
 	fix_zsh
@@ -19,7 +18,7 @@ main() {
 
 
 install_homebrew() {
-	if [ ! -x /usr/local/bin/brew ]; then
+	if [ ! -x /opt/homebrew/bin/brew ]; then
 		/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 	fi
 }
@@ -144,21 +143,6 @@ directories() {
 	# https://developer.1password.com/docs/ssh/get-started/#step-3-turn-on-the-1password-ssh-agent
 	mkdir -p ~/.1password && \
 		ln -s ~/Library/Group\ Containers/2BUA8C4S2C.com.1password/t/agent.sock ~/.1password/agent.sock
-}
-
-
-# On Apple Silicon (M1) Macs Homebrew does not install into /usr/local
-# and therefore things like building mu4e fail as it cannot spy things
-# like xapian.h when trying to build.  By putting these symlinks in it
-# allows things to work similar to other machines without loads of
-# extra change.
-symlink_homebrew_for_arm64_machines() {
-	if [ "$(uname -m)" = "arm64" ] ; then
-		sudo ln -sf /opt/homebrew/include /usr/local
-		sudo mkdir -p /usr/local/share/emacs/site-lisp
-		sudo ln -sf /opt/homebrew/share/emacs/site-lisp/mu/mu4e \
-			 /usr/local/share/emacs/site-lisp/mu4e
-	fi
 }
 
 

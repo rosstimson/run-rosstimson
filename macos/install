@@ -157,11 +157,11 @@ gpg_config_and_keys() {
 	chmod 700 ~/.gnupg
 
 	# Import my public key if it is not already present.
-	gpg --keyserver pool.sks-keyservers.net --recv-keys 0x667A3481E4BB34F3
+	gpg --recv-keys 0x667A3481E4BB34F3
 
 	# Emacs fails to install some things cos a GPG ELPA Signing key is
 	# missing, get the following key to fix:
-	gpg --keyserver pool.sks-keyservers.net --recv-keys 0x066DAFCB81E42C40
+	gpg --recv-keys 0x066DAFCB81E42C40
 }
 
 

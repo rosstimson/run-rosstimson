@@ -9,7 +9,6 @@ main() {
 	directories
 	#fix_tilde_key
 	emacs_service
-	fix_zsh
 	hunspell_dictionaries
 	dotfiles
 	gpg_config_and_keys
@@ -106,19 +105,6 @@ emacs_service() {
 	# 			</dict>
 	# 	</plist>
 	# EOF
-}
-
-
-# Because of the way Homebrew makes your user the owner of stuff in
-# /usr/local zsh will complain about permissions with an error like:
-#
-# zsh compinit: insecure directories, run compaudit for list.
-# Ignore insecure directories and continue [y] or abort compinit [n]? ncompinit: initialization aborted
-#
-# To fix the error you remove write permissions for the group.
-fix_zsh() {
-	sudo chmod -R 755 /usr/local/share/zsh
-	sudo chown -R $(whoami):admin /usr/local/share/zsh
 }
 
 

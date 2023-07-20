@@ -1,13 +1,12 @@
 tap "homebrew/bundle"
 tap "homebrew/cask"
-tap "homebrew/cask-drivers"
 tap "homebrew/cask-fonts"
 tap "homebrew/core"
 tap "homebrew/services"
 
 tap "borkdude/brew"
 tap "buildpacks/tap"
-tap "d11frosted/emacs-plus"
+tap "d12frosted/emacs-plus"
 tap "dagger/tap"
 tap "hashicorp/tap"
 tap "pulumi/tap"
@@ -15,6 +14,7 @@ tap "pulumi/tap"
 
 
 brew "age"
+brew "asdf"
 brew "aspell"
 brew "automake"
 brew "awscli"
@@ -36,7 +36,6 @@ brew "emacs-plus", args: ["with-elrumo1-icon", "with-native-comp"]
 brew "entr"
 brew "exa"
 brew "fd"
-brew "font-twilio-sans-mono"
 brew "gh"
 brew "git"
 brew "git-delta"
@@ -46,7 +45,6 @@ brew "gradle"
 brew "hashicorp/tap/terraform"
 brew "helix"
 brew "hunspell"
-brew "hyperkit"
 brew "iam-policy-json-to-terraform"
 brew "isync"
 brew "jdtls"
@@ -97,10 +95,11 @@ brew "zoxide"
 brew "zstd"
 
 
-cask "1password"
+#cask "1password"
 cask "1password-cli"
 cask "alacritty"
-cask "alfred"
+cask "arc"
+cask "bartender"
 cask "beekeeper-studio"
 cask "bettertouchtool"
 cask "dash"
@@ -122,6 +121,7 @@ cask "postgres-unofficial"
 cask "raindropio"
 cask "raycast"
 cask "rectangle-pro"
+cask "reflect"
 cask "signal"
 cask "thingsmacsandboxhelper"
 cask "transmission"
@@ -135,6 +135,7 @@ mas "DuckDuckGo Privacy Essentials", id: 1482920575
 mas "Fantastical", id: 975937182
 mas "Kaleidoscope", id: 1575557335
 mas "Keynote", id: 409183694
+mas "Lightroom", id: 1451544217
 mas "Marked 2", id: 890031187
 mas "Mela", id: 1568924476
 mas "Numbers", id: 409203825

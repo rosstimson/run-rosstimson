@@ -8,11 +8,11 @@ main() {
 	config_sudo
 	directories
 	#fix_tilde_key
-	emacs_service
 	hunspell_dictionaries
 	dotfiles
 	gpg_config_and_keys
 	dev
+	start_services
 }
 
 
@@ -80,37 +80,6 @@ fix_tilde_key() {
 		</dict>
 		</plist>
 	EOF
-}
-
-
-# Use launchd to start Emacs as a service so I can quickly use it via emacsclient.
-emacs_service() {
-  # When using the emacs-plus homebrew package it has an included way to easily
-  # run Emacs as a service.
-  brew services start d12frosted/emacs-plus/emacs-plus@28
-
-  # If not using the emacs-plus package from Homebrew you can configure launchd
-  # service like so:
-
-	# cat <<- EOF | tee ~/Library/LaunchAgents/local.emacs.plist
-	# 	<?xml version="1.0" encoding="UTF-8"?>
-	# 	<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-	# 	<plist version="1.0">
-	# 		<dict>
-	# 			<key>KeepAlive</key>
-	# 			<true/>
-	# 			<key>Label</key>
-	# 			<string>local.emacs</string>
-	# 			<key>ProgramArguments</key>
-	# 			<array>
-	# 				<string>/usr/local/bin/emacs/emacs</string>
-	# 				<string>--fg-daemon</string>
-	# 			</array>
-	# 			<key>RunAtLoad</key>
-	# 			<true/>
-	# 			</dict>
-	# 	</plist>
-	# EOF
 }
 
 
@@ -182,6 +151,15 @@ dev() {
 	yarn global add eslint typescript-language-server typescript
 }
 
+
+start_services() {
+	brew services start d12frosted/emacs-plus/emacs-plus@28
+
+	# For minikube, note this needs to be done with sudo
+	sudo brew services start socket_vmnet
+	# Whilst setting up for minikube also set the default driver
+	minikube config set driver qemu2
+}
 
 # GO!!!  Provision this bad lad.
 main

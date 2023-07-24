@@ -20,6 +20,16 @@ script.
 Remember to also copy across secret Signify key to
 `~/.signify/rosstimson.sec` for signing new versions of these scripts.
 
+### macOS
+
+There are a few things that needs done manually after running the
+install script.
+
+1. Disable ctrl-space keyboard shortcut: Sys Prefs -> Keyboard
+   shortcuts -> Keyboard Shortcuts -> Input sources
+
+2. Install Cartograph font as Emacs config defaults to it.
+
 ### Ubuntu
 
 Get the install script:

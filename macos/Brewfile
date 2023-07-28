@@ -30,6 +30,7 @@ brew "coreutils"
 brew "dagger/tap/dagger"
 brew "delve"
 brew "deno"
+brew "direnv"
 brew "dog"
 brew "dust"
 brew "emacs-plus", args: ["with-elrumo1-icon", "with-native-comp"]

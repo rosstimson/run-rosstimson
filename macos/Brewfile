@@ -128,6 +128,7 @@ cask "reflect"
 cask "signal"
 cask "thingsmacsandboxhelper"
 cask "transmission"
+cask "virtualbuddy"
 cask "visual-studio-code"
 
 

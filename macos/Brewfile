@@ -13,6 +13,7 @@ tap "pulumi/tap"
 
 
 
+brew "DeterminateSystems/riff/riff"
 brew "age"
 brew "asdf"
 brew "aspell"
@@ -98,6 +99,7 @@ brew "zoxide"
 brew "zstd"
 
 
+
 #cask "1password"
 cask "1password-cli"
 cask "alacritty"
@@ -119,6 +121,7 @@ cask "jetbrains-toolbox"
 cask "keepingyouawake"
 cask "ksdiff"
 cask "little-snitch"
+cask "mactex"
 cask "pgadmin4"
 cask "postgres-unofficial"
 cask "raindropio"

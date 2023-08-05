@@ -148,7 +148,7 @@ dev() {
 	pip3 install --user -U pipx poetry proselint python-language-server pyls-black pre-commit
 
 	# Install some JavaScript essential tools
-	yarn global add eslint typescript-language-server typescript
+	pnpm add -g eslint typescript-language-server typescript
 }
 
 

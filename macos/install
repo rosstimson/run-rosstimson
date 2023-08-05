@@ -144,9 +144,12 @@ gpg_config_and_keys() {
 
 
 dev() {
-	# Install Nix stuff
-	curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix | sh -s -- install && \
-	. /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh
+	# Install Nix stuff: https://determinate.systems/posts/determinate-nix-installer
+	curl --proto '=https' --tlsv1.2 -fsSL https://install.determinate.systems/nix | sh -s -- install && \
+		. /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh
+
+	# Devbox makes creating dev envs with Nix easier: https://www.jetpack.io/devbox/
+	curl --proto '=https' --tlsv1.2 -fsSL https://get.jetpack.io/devbox | bash
 
 	# Install some essential Python tools
 	pip3 install --user -U pipx poetry proselint python-language-server pyls-black pre-commit

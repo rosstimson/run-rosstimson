@@ -34,7 +34,7 @@ brew "deno"
 brew "direnv"
 brew "dog"
 brew "dust"
-brew "emacs-plus", args: ["with-elrumo1-icon", "with-native-comp"]
+brew "emacs-plus", args: ["with-elrumo1-icon"]
 brew "entr"
 brew "exa"
 brew "fd"

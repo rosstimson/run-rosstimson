@@ -106,7 +106,7 @@ directories() {
 		ln -sf ~/Library/Group\ Containers/2BUA8C4S2C.com.1password/t/agent.sock ~/.1password/agent.sock
 
 	# Symlink Emacs installed via Homebrew
-	ln -sf /opt/homebrew/opt/emacs-plus@28/Emacs.app /Applications
+	ln -sf /opt/homebrew/opt/emacs-plus@29/Emacs.app /Applications
 }
 
 
@@ -160,7 +160,7 @@ dev() {
 
 
 start_services() {
-	brew services start d12frosted/emacs-plus/emacs-plus@28
+	brew services start d12frosted/emacs-plus/emacs-plus@29
 
 	# For minikube, note this needs to be done with sudo
 	sudo brew services start socket_vmnet

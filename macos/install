@@ -92,7 +92,7 @@ hunspell_dictionaries() {
 
 # Create directories I normally have.
 directories() {
-	mkdir -p ~/{org,sites,src,sync}
+	mkdir -p ~/Documents/{notes,sites}
 	mkdir -p ~/Pictures/{screenshots,wallpapers}
 	mkdir -p ~/code/{clojure,go,python,rust,shell,terraform,javascript,java}
 

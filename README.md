@@ -1,6 +1,6 @@
 # Run Ross Timson
 
-![Deploy](https://github.com/rosstimson/run-rosstimson/workflows/Deploy/badge.svg)
+> **Note:** This repo has been moved to [sourcehut](https://git.sr.ht/~rosstimson/run-rosstimson "repo moved to sourcehut").
 
 Scripts to provision my laptops / desktops.
 

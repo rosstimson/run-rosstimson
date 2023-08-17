@@ -15,7 +15,6 @@ main() {
 	start_services
 }
 
-
 install_homebrew() {
 	# Only run the Homebrew installer if the brew executable does not already exist.
 	if [ ! -x /opt/homebrew/bin/brew ]; then
